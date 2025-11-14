@@ -1,0 +1,279 @@
+import type { Question } from '../types/quiz.types';
+
+export const questions: Question[] = [
+  // Architecture & Design (Q1-Q4)
+  {
+    id: 'Q1',
+    type: 'single',
+    quadrant: 'architecture',
+    question: 'Read-heavy with eventual consistency，哪個設計較合適？',
+    options: [
+      'A. Single DB with pessimistic lock',
+      'B. Event Sourcing + Async messaging + Materialized read model',
+      'C. Distributed transaction (2PC) for strong consistency',
+      'D. Single primary for both read/write'
+    ],
+    correctAnswer: 'B',
+    maxScore: 2
+  },
+  {
+    id: 'Q2',
+    type: 'multiple',
+    quadrant: 'architecture',
+    question: 'Idempotency in payment webhook，需要哪些元素？',
+    options: [
+      'A. Idempotency-Key with unique constraint',
+      'B. Stateless processing only',
+      'C. State machine with terminal states',
+      'D. Retry without backoff'
+    ],
+    correctAnswer: ['A', 'C'],
+    maxScore: 3
+  },
+  {
+    id: 'Q3',
+    type: 'single',
+    quadrant: 'architecture',
+    question: 'Partial success for batch API，最合適的 HTTP 表達？',
+    options: [
+      'A. 200 OK with summary only',
+      'B. 207 Multi-Status with per-item result',
+      'C. 500 if any item fails',
+      'D. 202 without body'
+    ],
+    correctAnswer: 'B',
+    maxScore: 2
+  },
+  {
+    id: 'Q4',
+    type: 'truefalse',
+    quadrant: 'architecture',
+    question: 'Saga 更適用跨服務長交易與最終一致，2PC 更偏向強一致短交易。',
+    correctAnswer: 'true',
+    maxScore: 2
+  },
+
+  // Performance & Observability (Q5-Q8)
+  {
+    id: 'Q5',
+    type: 'single',
+    quadrant: 'performance',
+    question: 'Lower p95 latency',
+    options: [
+      'A. Switch JVM GC to Serial',
+      'B. Use connection pool, tune timeouts, consider non-blocking I/O',
+      'C. Increase log level to DEBUG',
+      'D. Disable metrics exporting'
+    ],
+    correctAnswer: 'B',
+    maxScore: 2
+  },
+  {
+    id: 'Q6',
+    type: 'multiple',
+    quadrant: 'performance',
+    question: 'Cache protection - 為防 cache penetration/avalanche，常見手法：',
+    options: [
+      'A. Bloom filter for non-existing keys',
+      'B. Randomized TTL (jitter)',
+      'C. Disable cache consistency entirely',
+      'D. Cache-Aside pattern'
+    ],
+    correctAnswer: ['A', 'B', 'D'],
+    maxScore: 3
+  },
+  {
+    id: 'Q7',
+    type: 'single',
+    quadrant: 'performance',
+    question: 'Distributed Tracing - 跨服務延遲定位關鍵是：',
+    options: [
+      'A. CPU metrics only',
+      'B. Propagate Trace/Span Context across services',
+      'C. Only check API Gateway latency',
+      'D. Enable DEBUG logs'
+    ],
+    correctAnswer: 'B',
+    maxScore: 2
+  },
+  {
+    id: 'Q8',
+    type: 'truefalse',
+    quadrant: 'performance',
+    question: 'SLO-based canary - 金絲雀判斷應基於 error rate/latency/saturation 門檻自動回滾。',
+    correctAnswer: 'true',
+    maxScore: 2
+  },
+
+  // Reliability & Delivery (Q9-Q12)
+  {
+    id: 'Q9',
+    type: 'multiple',
+    quadrant: 'reliability',
+    question: 'Release safety - 降低回滾風險：',
+    options: [
+      'A. Blue-Green/Canary',
+      'B. Feature Flag',
+      'C. Disable health checks',
+      'D. Automated rollback on SLO breach'
+    ],
+    correctAnswer: ['A', 'B', 'D'],
+    maxScore: 3
+  },
+  {
+    id: 'Q10',
+    type: 'single',
+    quadrant: 'reliability',
+    question: 'Oversell prevention',
+    options: [
+      'A. In-process synchronized',
+      'B. Distributed lock with lease/timeout',
+      'C. Rely on eventual consistency only',
+      'D. Retry until success without limit'
+    ],
+    correctAnswer: 'B',
+    maxScore: 2
+  },
+  {
+    id: 'Q11',
+    type: 'single',
+    quadrant: 'reliability',
+    question: 'Resilience validation',
+    options: [
+      'A. Only load testing QPS',
+      'B. Chaos Engineering to inject failures and observe'
+    ],
+    correctAnswer: 'B',
+    maxScore: 2
+  },
+  {
+    id: 'Q12',
+    type: 'truefalse',
+    quadrant: 'reliability',
+    question: 'Quality Gate - Merge 前：Unit tests pass、Static analysis no high risk、Key e2e smoke present。',
+    correctAnswer: 'true',
+    maxScore: 2
+  },
+
+  // Data & Storage (Q13-Q16)
+  {
+    id: 'Q13',
+    type: 'single',
+    quadrant: 'data',
+    question: 'Index strategy - 慢查詢常來自 WHERE/ORDER BY 欄，首要：',
+    options: [
+      'A. Increase DB connections',
+      'B. Create proper composite index matching filter/sort',
+      'C. Bigger machine first',
+      'D. Enable slow query log only'
+    ],
+    correctAnswer: 'B',
+    maxScore: 2
+  },
+  {
+    id: 'Q14',
+    type: 'truefalse',
+    quadrant: 'data',
+    question: 'SELECT * + covering index - SELECT * 配 covering index 通常最佳化通用。',
+    correctAnswer: 'false',
+    maxScore: 2
+  },
+  {
+    id: 'Q15',
+    type: 'single',
+    quadrant: 'data',
+    question: 'Read pattern in NoSQL - User + time-range 主路徑，NoSQL 常：',
+    options: [
+      'A. Fully normalized',
+      'B. Denormalize for access path with composite keys'
+    ],
+    correctAnswer: 'B',
+    maxScore: 2
+  },
+  {
+    id: 'Q16',
+    type: 'truefalse',
+    quadrant: 'data',
+    question: 'Security – JWT revocation - JWT 可用 blacklist/version + short TTL + rotation 來撤銷。',
+    correctAnswer: 'true',
+    maxScore: 2
+  },
+
+  // Scenario (Q17-Q20) - Mixed quadrants
+  {
+    id: 'Q17',
+    type: 'scenario',
+    quadrant: 'mixed',
+    question: 'RCA for p95 spike and timeouts - 描述如何進行根本原因分析（每項 1 分）：',
+    correctAnswer: '',
+    maxScore: 5,
+    distribution: {
+      architecture: 0.25,
+      performance: 0.25,
+      reliability: 0.25,
+      data: 0.25
+    },
+    rubric: [
+      'Collect SLI/SLO: error rate, latency, saturation; compare canary vs baseline',
+      'Distributed trace to find critical path (longest span)',
+      'Narrow reproduction conditions; add key metrics/logs',
+      'Apply timeouts/retries/circuit breaker; cache/degrade as needed',
+      'Short-term mitigation (rate limit/scale) + mid-term optimization (query/index/batching)'
+    ]
+  },
+  {
+    id: 'Q18',
+    type: 'multiple',
+    quadrant: 'mixed',
+    question: 'Reliable messaging - 避免丟單與重複消費：',
+    options: [
+      'A. Outbox pattern (producer store then publish)',
+      'B. Consumer idempotency with business key',
+      'C. Disable retries',
+      'D. At-least-once delivery'
+    ],
+    correctAnswer: ['A', 'B', 'D'],
+    maxScore: 3,
+    distribution: {
+      architecture: 0,
+      performance: 0,
+      reliability: 0.5,
+      data: 0.5
+    }
+  },
+  {
+    id: 'Q19',
+    type: 'truefalse',
+    quadrant: 'mixed',
+    question: 'API contract for partial failure semantics - Batch API 應在契約層清楚定義 per-item error codes 與 correlation ids。',
+    correctAnswer: 'true',
+    maxScore: 2,
+    distribution: {
+      architecture: 0.5,
+      performance: 0,
+      reliability: 0.5,
+      data: 0
+    }
+  },
+  {
+    id: 'Q20',
+    type: 'single',
+    quadrant: 'mixed',
+    question: 'Capacity planning signal - 最能預示飽和與退化的指標：',
+    options: [
+      'A. Log lines count',
+      'B. Queue length / saturation (e.g., CPU run queue, DB connection wait)',
+      'C. Number of features deployed'
+    ],
+    correctAnswer: 'B',
+    maxScore: 2,
+    distribution: {
+      architecture: 0,
+      performance: 0.7,
+      reliability: 0.3,
+      data: 0
+    }
+  }
+];
+
+export const TOTAL_QUESTIONS = questions.length;

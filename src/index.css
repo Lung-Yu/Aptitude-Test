@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+/* Print styles */
+@media print {
+  .print\:hidden {
+    display: none !important;
+  }
+  
+  /* Ensure proper page breaks */
+  .bg-white {
+    page-break-inside: avoid;
+  }
+}
