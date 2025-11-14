@@ -11,7 +11,8 @@
       "D. Single primary for both read/write"
     ],
     "correctAnswer": "B",
-    "maxScore": 2
+    "maxScore": 2,
+    "explanation": "Event Sourcing 配合非同步訊息和 Materialized View 是 read-heavy 場景的理想架構。它允許最終一致性，通過預先計算的 read model 提供高效查詢，避免了悲觀鎖的性能瓶頸。寫入操作僅需追加事件，讀取則從優化過的 materialized view 進行，實現了讀寫分離和水平擴展。"
   },
   {
     "id": "Q2",
@@ -25,7 +26,8 @@
       "D. Retry without backoff"
     ],
     "correctAnswer": ["A", "C"],
-    "maxScore": 3
+    "maxScore": 3,
+    "explanation": "支付 webhook 的冪等性需要：(A) Idempotency-Key 配合資料庫 unique constraint 防止重複處理；(C) State machine 確保狀態轉換的正確性，terminal states（如 completed/failed）防止狀態被錯誤覆蓋。選項 B 錯誤因為需要持久化狀態，選項 D 錯誤因為需要 exponential backoff 避免雪崩。"
   },
   {
     "id": "Q3",
@@ -39,7 +41,8 @@
       "D. 202 without body"
     ],
     "correctAnswer": "B",
-    "maxScore": 2
+    "maxScore": 2,
+    "explanation": "HTTP 207 Multi-Status 是 WebDAV 標準，專為批次操作設計。它允許回傳每個項目的獨立狀態碼和結果，客戶端可以精確知道哪些成功、哪些失敗。這比 200 OK 的摘要更詳細，比 500 的全盤失敗更彈性，也比 202 提供更即時的反饋。"
   },
   {
     "id": "Q4",

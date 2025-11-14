@@ -17,6 +17,7 @@ export interface Question {
   maxScore: number;
   distribution?: QuadrantDistribution;
   rubric?: string[];
+  explanation?: string;  // Detailed explanation for the correct answer
 }
 
 export interface QuizState {

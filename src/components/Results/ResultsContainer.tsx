@@ -5,10 +5,12 @@ import { calculateScore } from '../../utils/scoreCalculator';
 import { RadarChart } from './RadarChart';
 import { ScoreSummary } from './ScoreSummary';
 import { ScenarioGrading } from './ScenarioGrading';
+import { AnswerReview } from './AnswerReview';
 
 export const ResultsContainer: React.FC = () => {
   const { state, resetQuiz } = useQuiz();
   const [showGrading, setShowGrading] = useState(false);
+  const [showAnswerReview, setShowAnswerReview] = useState(false);
   const result = calculateScore(questions, state.answers, state.scenarioScores || {});
   
   const scenarioQuestions = questions.filter(q => q.type === 'scenario');
@@ -38,15 +40,27 @@ export const ResultsContainer: React.FC = () => {
         </div>
 
         {/* Actions */}
-        <div className="flex justify-center gap-4 mb-8 print:hidden">
+        <div className="flex justify-center gap-4 mb-8 print:hidden flex-wrap">
           {ungradedScenarios.length > 0 && (
             <button
-              onClick={() => setShowGrading(!showGrading)}
+              onClick={() => {
+                setShowGrading(!showGrading);
+                setShowAnswerReview(false);
+              }}
               className="px-6 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 transition-colors"
             >
               📝 情境題評分 ({ungradedScenarios.length} 題未評)
             </button>
           )}
+          <button
+            onClick={() => {
+              setShowAnswerReview(!showAnswerReview);
+              setShowGrading(false);
+            }}
+            className="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+          >
+            💡 查看答案解析
+          </button>
           <button
             onClick={handleRestart}
             className="px-6 py-3 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors"
@@ -60,6 +74,13 @@ export const ResultsContainer: React.FC = () => {
             🖨️ 列印結果
           </button>
         </div>
+
+        {/* Answer Review Section */}
+        {showAnswerReview && (
+          <div className="mb-8">
+            <AnswerReview />
+          </div>
+        )}
 
         {/* Scenario Grading Section */}
         {showGrading && (
