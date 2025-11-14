@@ -1,13 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuiz } from '../../context/QuizContext';
 import { questions } from '../../data/questions';
 import { calculateScore } from '../../utils/scoreCalculator';
 import { RadarChart } from './RadarChart';
 import { ScoreSummary } from './ScoreSummary';
+import { ScenarioGrading } from './ScenarioGrading';
 
 export const ResultsContainer: React.FC = () => {
   const { state, resetQuiz } = useQuiz();
-  const result = calculateScore(questions, state.answers);
+  const [showGrading, setShowGrading] = useState(false);
+  const result = calculateScore(questions, state.answers, state.scenarioScores || {});
+  
+  const scenarioQuestions = questions.filter(q => q.type === 'scenario');
+  const ungradedScenarios = scenarioQuestions.filter(
+    q => !state.scenarioScores || state.scenarioScores[q.id] === undefined
+  );
 
   const handleRestart = () => {
     if (confirm('確定要重新開始評測嗎？所有答案將會被清除。')) {
@@ -32,6 +39,14 @@ export const ResultsContainer: React.FC = () => {
 
         {/* Actions */}
         <div className="flex justify-center gap-4 mb-8 print:hidden">
+          {ungradedScenarios.length > 0 && (
+            <button
+              onClick={() => setShowGrading(!showGrading)}
+              className="px-6 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 transition-colors"
+            >
+              📝 情境題評分 ({ungradedScenarios.length} 題未評)
+            </button>
+          )}
           <button
             onClick={handleRestart}
             className="px-6 py-3 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors"
@@ -45,6 +60,13 @@ export const ResultsContainer: React.FC = () => {
             🖨️ 列印結果
           </button>
         </div>
+
+        {/* Scenario Grading Section */}
+        {showGrading && (
+          <div className="mb-8">
+            <ScenarioGrading />
+          </div>
+        )}
 
         {/* Results Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -123,13 +145,27 @@ export const ResultsContainer: React.FC = () => {
         </div>
 
         {/* Note about Scenario Questions */}
-        <div className="mt-6 bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
-          <h3 className="font-semibold text-amber-900 mb-2">📋 關於情境題評分</h3>
-          <p className="text-sm text-amber-800">
-            情境題（Q17-Q20）需要人工根據評分準則進行評分。目前系統假設情境題未評分或已手動評分。
-            如需完整評測，請由考官審閱情境題答案並根據準則給分。
-          </p>
-        </div>
+        {ungradedScenarios.length > 0 ? (
+          <div className="mt-6 bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
+            <h3 className="font-semibold text-amber-900 mb-2">⚠️ 尚有情境題未評分</h3>
+            <p className="text-sm text-amber-800 mb-2">
+              還有 {ungradedScenarios.length} 道情境題尚未評分，目前結果不包含這些題目的分數。
+            </p>
+            <button
+              onClick={() => setShowGrading(true)}
+              className="text-sm text-amber-900 underline hover:text-amber-700"
+            >
+              點擊這裡進行評分 →
+            </button>
+          </div>
+        ) : (
+          <div className="mt-6 bg-green-50 border-l-4 border-green-500 p-4 rounded">
+            <h3 className="font-semibold text-green-900 mb-2">✅ 所有題目已評分完成</h3>
+            <p className="text-sm text-green-800">
+              包含情境題在內的所有題目都已評分，以上為完整的評測結果。
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

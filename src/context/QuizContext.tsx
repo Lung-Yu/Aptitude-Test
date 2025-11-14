@@ -8,6 +8,7 @@ const STORAGE_KEY = 'backend_assessment_quiz';
 const initialState: QuizState = {
   currentStep: 0,
   answers: {},
+  scenarioScores: {},
   isComplete: false
 };
 
@@ -19,6 +20,14 @@ const quizReducer = (state: QuizState, action: QuizAction): QuizState => {
         answers: {
           ...state.answers,
           [action.payload.questionId]: action.payload.answer
+        }
+      };
+    case 'SET_SCENARIO_SCORE':
+      return {
+        ...state,
+        scenarioScores: {
+          ...state.scenarioScores,
+          [action.payload.questionId]: action.payload.score
         }
       };
     case 'NEXT_STEP':
@@ -52,6 +61,7 @@ interface QuizContextType {
   state: QuizState;
   dispatch: React.Dispatch<QuizAction>;
   setAnswer: (questionId: string, answer: string | string[]) => void;
+  setScenarioScore: (questionId: string, score: number) => void;
   nextStep: () => void;
   prevStep: () => void;
   jumpToStep: (step: number) => void;
@@ -67,7 +77,12 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        // Ensure scenarioScores exists for backward compatibility
+        return {
+          ...parsed,
+          scenarioScores: parsed.scenarioScores || {}
+        };
       }
     } catch (error) {
       console.error('Failed to load saved quiz state:', error);
@@ -88,6 +103,10 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const setAnswer = (questionId: string, answer: string | string[]) => {
     dispatch({ type: 'SET_ANSWER', payload: { questionId, answer } });
+  };
+
+  const setScenarioScore = (questionId: string, score: number) => {
+    dispatch({ type: 'SET_SCENARIO_SCORE', payload: { questionId, score } });
   };
 
   const nextStep = () => {
@@ -117,6 +136,7 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         state,
         dispatch,
         setAnswer,
+        setScenarioScore,
         nextStep,
         prevStep,
         jumpToStep,

@@ -3,7 +3,8 @@ import type { ScoreResult, QuadrantScores, QuadrantMaxScores } from '../types/re
 
 export const calculateScore = (
   questions: Question[],
-  answers: Record<string, string | string[]>
+  answers: Record<string, string | string[]>,
+  scenarioScores?: Record<string, number>
 ): ScoreResult => {
   const scores: QuadrantScores = {
     architecture: 0,
@@ -43,11 +44,9 @@ export const calculateScore = (
         questionScore = question.maxScore;
       }
     } else if (question.type === 'scenario') {
-      // Scenario questions need manual scoring - use stored score if available
-      // For now, if answer exists, assume it's been scored
-      if (typeof userAnswer === 'string' && userAnswer.trim() !== '') {
-        // This will be calculated separately or manually scored
-        questionScore = parseFloat(userAnswer) || 0;
+      // Scenario questions use manual scoring from scenarioScores
+      if (scenarioScores && scenarioScores[question.id] !== undefined) {
+        questionScore = scenarioScores[question.id];
       }
     }
 
