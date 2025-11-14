@@ -1,13 +1,11 @@
+import type { Quadrant } from '../data/categories';
+
 export type QuestionType = 'single' | 'multiple' | 'truefalse' | 'scenario';
 
-export type Quadrant = 'architecture' | 'performance' | 'reliability' | 'data';
+export type { Quadrant };
 
-export interface QuadrantDistribution {
-  architecture: number;
-  performance: number;
-  reliability: number;
-  data: number;
-}
+// Dynamic distribution - can contain any quadrant keys
+export type QuadrantDistribution = Record<string, number>;
 
 export interface Question {
   id: string;

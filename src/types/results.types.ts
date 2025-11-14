@@ -1,16 +1,7 @@
-export interface QuadrantScores {
-  architecture: number;
-  performance: number;
-  reliability: number;
-  data: number;
-}
+// Dynamic quadrant scores - supports any number of quadrants
+export type QuadrantScores = Record<string, number>;
 
-export interface QuadrantMaxScores {
-  architecture: number;
-  performance: number;
-  reliability: number;
-  data: number;
-}
+export type QuadrantMaxScores = Record<string, number>;
 
 export interface ScoreResult {
   scores: QuadrantScores;

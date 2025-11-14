@@ -146,26 +146,14 @@ export const ScenarioGrading: React.FC = () => {
                 此題分數會按以下比例分配到各象限：
               </p>
               <div className="grid grid-cols-2 gap-2 text-sm">
-                {selectedQuestion.distribution.architecture > 0 && (
-                  <div className="text-indigo-700">
-                    Architecture: {(selectedQuestion.distribution.architecture * 100).toFixed(0)}%
-                  </div>
-                )}
-                {selectedQuestion.distribution.performance > 0 && (
-                  <div className="text-indigo-700">
-                    Performance: {(selectedQuestion.distribution.performance * 100).toFixed(0)}%
-                  </div>
-                )}
-                {selectedQuestion.distribution.reliability > 0 && (
-                  <div className="text-indigo-700">
-                    Reliability: {(selectedQuestion.distribution.reliability * 100).toFixed(0)}%
-                  </div>
-                )}
-                {selectedQuestion.distribution.data > 0 && (
-                  <div className="text-indigo-700">
-                    Data: {(selectedQuestion.distribution.data * 100).toFixed(0)}%
-                  </div>
-                )}
+                {Object.entries(selectedQuestion.distribution)
+                  .filter(([_, ratio]) => ratio > 0)
+                  .map(([quadrant, ratio]) => (
+                    <div key={quadrant} className="text-indigo-700 capitalize">
+                      {quadrant}: {(ratio * 100).toFixed(0)}%
+                    </div>
+                  ))
+                }
               </div>
             </div>
           )}

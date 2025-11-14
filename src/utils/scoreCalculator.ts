@@ -1,24 +1,21 @@
 import type { Question } from '../types/quiz.types';
 import type { ScoreResult, QuadrantScores, QuadrantMaxScores } from '../types/results.types';
+import { getQuadrantKeys } from '../data/categories';
 
 export const calculateScore = (
   questions: Question[],
   answers: Record<string, string | string[]>,
   scenarioScores?: Record<string, number>
 ): ScoreResult => {
-  const scores: QuadrantScores = {
-    architecture: 0,
-    performance: 0,
-    reliability: 0,
-    data: 0
-  };
-
-  const maxScores: QuadrantMaxScores = {
-    architecture: 0,
-    performance: 0,
-    reliability: 0,
-    data: 0
-  };
+  // Initialize scores and maxScores dynamically for all quadrants
+  const quadrantKeys = getQuadrantKeys();
+  const scores: QuadrantScores = {};
+  const maxScores: QuadrantMaxScores = {};
+  
+  quadrantKeys.forEach(key => {
+    scores[key] = 0;
+    maxScores[key] = 0;
+  });
 
   questions.forEach((question) => {
     const userAnswer = answers[question.id];
@@ -52,32 +49,28 @@ export const calculateScore = (
 
     // Distribute score to quadrants
     if (question.quadrant === 'mixed' && question.distribution) {
-      scores.architecture += questionScore * question.distribution.architecture;
-      scores.performance += questionScore * question.distribution.performance;
-      scores.reliability += questionScore * question.distribution.reliability;
-      scores.data += questionScore * question.distribution.data;
-
-      maxScores.architecture += question.maxScore * question.distribution.architecture;
-      maxScores.performance += question.maxScore * question.distribution.performance;
-      maxScores.reliability += question.maxScore * question.distribution.reliability;
-      maxScores.data += question.maxScore * question.distribution.data;
-    } else if (question.quadrant !== 'mixed') {
+      // Dynamically distribute across all quadrants in distribution
+      Object.entries(question.distribution).forEach(([quadrant, ratio]) => {
+        if (scores[quadrant] !== undefined) {
+          scores[quadrant] += questionScore * ratio;
+          maxScores[quadrant] += question.maxScore * ratio;
+        }
+      });
+    } else if (question.quadrant !== 'mixed' && scores[question.quadrant] !== undefined) {
       scores[question.quadrant] += questionScore;
       maxScores[question.quadrant] += question.maxScore;
     }
   });
 
-  // Calculate percentages
-  const percentages: QuadrantScores = {
-    architecture: maxScores.architecture > 0 ? (scores.architecture / maxScores.architecture) * 100 : 0,
-    performance: maxScores.performance > 0 ? (scores.performance / maxScores.performance) * 100 : 0,
-    reliability: maxScores.reliability > 0 ? (scores.reliability / maxScores.reliability) * 100 : 0,
-    data: maxScores.data > 0 ? (scores.data / maxScores.data) * 100 : 0
-  };
+  // Calculate percentages dynamically
+  const percentages: QuadrantScores = {};
+  quadrantKeys.forEach(key => {
+    percentages[key] = maxScores[key] > 0 ? (scores[key] / maxScores[key]) * 100 : 0;
+  });
 
-  const totalScore = scores.architecture + scores.performance + scores.reliability + scores.data;
-  const totalMaxScore =
-    maxScores.architecture + maxScores.performance + maxScores.reliability + maxScores.data;
+  // Calculate totals dynamically
+  const totalScore = Object.values(scores).reduce((sum, val) => sum + val, 0);
+  const totalMaxScore = Object.values(maxScores).reduce((sum, val) => sum + val, 0);
   const overallPercentage = totalMaxScore > 0 ? (totalScore / totalMaxScore) * 100 : 0;
 
   return {

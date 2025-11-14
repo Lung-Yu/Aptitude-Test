@@ -1,0 +1,26 @@
+[
+  {
+    "key": "architecture",
+    "name": "Architecture & Design",
+    "description": "系統設計/一致性/邊界",
+    "color": "#3b82f6"
+  },
+  {
+    "key": "performance",
+    "name": "Performance & Observability",
+    "description": "效能/快取/追蹤/指標",
+    "color": "#10b981"
+  },
+  {
+    "key": "reliability",
+    "name": "Reliability & Delivery",
+    "description": "釋出/韌性/併發",
+    "color": "#f59e0b"
+  },
+  {
+    "key": "data",
+    "name": "Data & Storage",
+    "description": "索引/查詢/Schema/安全",
+    "color": "#8b5cf6"
+  }
+]
