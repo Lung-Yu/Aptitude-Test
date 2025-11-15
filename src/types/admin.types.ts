@@ -1,3 +1,5 @@
+import type { Level, DimensionLevels } from './results.types';
+
 export interface ParticipantRecord {
   timestamp: string;
   name: string;
@@ -12,9 +14,12 @@ export interface ParticipantRecord {
   pendingScenarios: number;
   quadrantScores: Record<string, number>;
   quadrantMaxScores: Record<string, number>;
+  quadrantPercentages: Record<string, number>;
   answers: string;
   scenarioScores: string;
   notes: string;
+  dimensionLevels: DimensionLevels;  // Level for each dimension
+  overallLevel: Level;  // Overall level assessment
 }
 
 export interface SheetFetchResult {

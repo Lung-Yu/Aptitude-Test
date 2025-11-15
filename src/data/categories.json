@@ -1,26 +1,38 @@
 [
   {
-    "key": "architecture",
-    "name": "Architecture & Design",
-    "description": "系統設計/一致性/邊界",
+    "key": "algorithm",
+    "name": "演算法與資料結構",
+    "description": "資料結構/演算法複雜度/邊界條件/最佳化思維",
+    "color": "#ef4444"
+  },
+  {
+    "key": "fullstack",
+    "name": "前後端開發",
+    "description": "前端技術/後端開發/RESTful API/HTTP/WebSocket",
+    "color": "#f59e0b"
+  },
+  {
+    "key": "systemDesign",
+    "name": "系統設計與架構",
+    "description": "擴展性設計/分散式系統/微服務/資料庫設計",
     "color": "#3b82f6"
   },
   {
     "key": "performance",
-    "name": "Performance & Observability",
-    "description": "效能/快取/追蹤/指標",
+    "name": "效能與監控",
+    "description": "效能優化/快取策略/資料庫優化/監控追蹤/瓶頸分析",
     "color": "#10b981"
   },
   {
-    "key": "reliability",
-    "name": "Reliability & Delivery",
-    "description": "釋出/韌性/併發",
-    "color": "#f59e0b"
+    "key": "security",
+    "name": "資安與合規",
+    "description": "身份驗證/授權/加密/OWASP/資料保護",
+    "color": "#ec4899"
   },
   {
-    "key": "data",
-    "name": "Data & Storage",
-    "description": "索引/查詢/Schema/安全",
+    "key": "devops",
+    "name": "維運與協作",
+    "description": "CI/CD/部署策略/團隊協作/技術決策",
     "color": "#8b5cf6"
   }
 ]

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuiz } from '../../context/QuizContext';
 import { questions } from '../../data/questions';
+import { quadrants } from '../../data/categories';
 import { calculateScore } from '../../utils/scoreCalculator';
 import { RadarChart } from './RadarChart';
 import { ScoreSummary } from './ScoreSummary';
@@ -123,7 +124,7 @@ export const ResultsContainer: React.FC = () => {
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             評測完成！
           </h1>
-          <p className="text-gray-600">以下是你的後端工程能力分析結果</p>
+          <p className="text-gray-600">以下是你的軟體工程能力分析結果</p>
         </div>
 
         {/* Actions */}
@@ -314,65 +315,28 @@ export const ResultsContainer: React.FC = () => {
           <h2 className="text-2xl font-bold text-gray-900 mb-6">詳細分析</h2>
           
           <div className="space-y-6">
-            {/* Architecture & Design */}
-            <div className="border-l-4 border-blue-500 pl-4">
-              <h3 className="text-lg font-semibold text-blue-900 mb-2">
-                Architecture & Design ({result.scores.architecture.toFixed(2)}/{result.maxScores.architecture.toFixed(2)})
-              </h3>
-              <p className="text-sm text-gray-700 mb-2">
-                系統設計、一致性模型、API 設計等核心架構能力
-              </p>
-              <div className="text-sm text-gray-600">
-                {result.percentages.architecture >= 80 && '✅ 優秀：對系統架構有深入理解，能設計可擴展的解決方案。'}
-                {result.percentages.architecture >= 60 && result.percentages.architecture < 80 && '✔️ 良好：具備架構基礎，建議深入學習分散式系統設計模式。'}
-                {result.percentages.architecture < 60 && '⚠️ 需加強：建議系統學習架構設計模式、一致性模型和 API 設計最佳實踐。'}
-              </div>
-            </div>
-
-            {/* Performance & Observability */}
-            <div className="border-l-4 border-green-500 pl-4">
-              <h3 className="text-lg font-semibold text-green-900 mb-2">
-                Performance & Observability ({result.scores.performance.toFixed(2)}/{result.maxScores.performance.toFixed(2)})
-              </h3>
-              <p className="text-sm text-gray-700 mb-2">
-                效能優化、快取策略、分散式追蹤、監控指標等
-              </p>
-              <div className="text-sm text-gray-600">
-                {result.percentages.performance >= 80 && '✅ 優秀：具備專業的效能調校和可觀測性實踐能力。'}
-                {result.percentages.performance >= 60 && result.percentages.performance < 80 && '✔️ 良好：理解效能基礎，建議深入學習分散式追蹤和 SLO 監控。'}
-                {result.percentages.performance < 60 && '⚠️ 需加強：建議學習效能分析工具、快取策略和可觀測性最佳實踐。'}
-              </div>
-            </div>
-
-            {/* Reliability & Delivery */}
-            <div className="border-l-4 border-amber-500 pl-4">
-              <h3 className="text-lg font-semibold text-amber-900 mb-2">
-                Reliability & Delivery ({result.scores.reliability.toFixed(2)}/{result.maxScores.reliability.toFixed(2)})
-              </h3>
-              <p className="text-sm text-gray-700 mb-2">
-                發布策略、韌性設計、併發控制、品質閘門等
-              </p>
-              <div className="text-sm text-gray-600">
-                {result.percentages.reliability >= 80 && '✅ 優秀：精通可靠性工程和持續交付實踐。'}
-                {result.percentages.reliability >= 60 && result.percentages.reliability < 80 && '✔️ 良好：具備基本可靠性知識，建議學習混沌工程和自動化回滾。'}
-                {result.percentages.reliability < 60 && '⚠️ 需加強：建議學習發布策略、韌性模式和併發控制機制。'}
-              </div>
-            </div>
-
-            {/* Data & Storage */}
-            <div className="border-l-4 border-violet-500 pl-4">
-              <h3 className="text-lg font-semibold text-violet-900 mb-2">
-                Data & Storage ({result.scores.data.toFixed(2)}/{result.maxScores.data.toFixed(2)})
-              </h3>
-              <p className="text-sm text-gray-700 mb-2">
-                索引策略、查詢優化、Schema 設計、資料安全等
-              </p>
-              <div className="text-sm text-gray-600">
-                {result.percentages.data >= 80 && '✅ 優秀：對資料庫和儲存系統有深入理解。'}
-                {result.percentages.data >= 60 && result.percentages.data < 80 && '✔️ 良好：具備資料庫基礎，建議深入學習索引優化和 NoSQL 設計。'}
-                {result.percentages.data < 60 && '⚠️ 需加強：建議學習索引原理、查詢優化和不同儲存模型的適用場景。'}
-              </div>
-            </div>
+            {quadrants.map((quadrant) => {
+              const score = result.scores[quadrant.key];
+              const maxScore = result.maxScores[quadrant.key];
+              const percentage = result.percentages[quadrant.key];
+              
+              return (
+                <div key={quadrant.key} className="border-l-4 pl-4" style={{ borderColor: quadrant.color }}>
+                  <h3 className="text-lg font-semibold mb-2" style={{ color: quadrant.color }}>
+                    {quadrant.name} ({score.toFixed(2)}/{maxScore.toFixed(2)})
+                  </h3>
+                  <p className="text-sm text-gray-700 mb-2">
+                    {quadrant.description}
+                  </p>
+                  <div className="text-sm text-gray-600">
+                    {percentage >= 80 && '✅ 優秀：展現出色的專業能力，各方面表現優異。'}
+                    {percentage >= 60 && percentage < 80 && '✔️ 良好：具備良好基礎，建議持續深化相關領域知識。'}
+                    {percentage >= 40 && percentage < 60 && '⚡ 中等：有一定基礎，建議加強學習與實作經驗。'}
+                    {percentage < 40 && '⚠️ 需加強：建議系統性學習此維度的核心概念與最佳實踐。'}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 

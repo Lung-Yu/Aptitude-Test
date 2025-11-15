@@ -3,6 +3,11 @@ export type QuadrantScores = Record<string, number>;
 
 export type QuadrantMaxScores = Record<string, number>;
 
+// Level assessment types
+export type Level = 'Entry' | 'Junior' | 'Mid' | 'Senior' | 'Staff';
+
+export type DimensionLevels = Record<string, Level>;
+
 export interface ScoreResult {
   scores: QuadrantScores;
   maxScores: QuadrantMaxScores;
@@ -12,6 +17,8 @@ export interface ScoreResult {
   overallPercentage: number;
   dontKnowCounts: QuadrantScores;
   totalDontKnow: number;
+  dimensionLevels?: DimensionLevels;  // Level for each dimension
+  overallLevel?: Level;  // Overall level assessment
 }
 
 export interface RadarChartData {

@@ -2,268 +2,438 @@
   {
     "id": "Q1",
     "type": "single",
-    "quadrant": "architecture",
-    "question": "Read-heavy with eventual consistency，哪個設計較合適？",
+    "quadrant": "algorithm",
+    "question": "以下哪種資料結構最適合實作「最近使用的項目列表」（如瀏覽器歷史記錄）？",
     "options": [
-      "A. Single DB with pessimistic lock",
-      "B. Event Sourcing + Async messaging + Materialized read model",
-      "C. Distributed transaction (2PC) for strong consistency",
-      "D. Single primary for both read/write"
+      "A. 陣列（Array）- 固定大小，按索引存取",
+      "B. 雜湊表（Hash Map）- 鍵值對應，快速查找",
+      "C. 佇列（Queue）- 先進先出（FIFO）",
+      "D. 堆疊（Stack）- 後進先出（LIFO）"
     ],
-    "correctAnswer": "B",
+    "correctAnswer": "D",
     "maxScore": 2,
-    "explanation": "Event Sourcing 配合非同步訊息和 Materialized View 是 read-heavy 場景的理想架構。它允許最終一致性，通過預先計算的 read model 提供高效查詢，避免了悲觀鎖的性能瓶頸。寫入操作僅需追加事件，讀取則從優化過的 materialized view 進行，實現了讀寫分離和水平擴展。"
+    "explanation": "堆疊（Stack）的後進先出（LIFO）特性最適合儲存最近使用的項目。最新項目會在頂端，往下是較早的項目。瀏覽器的「上一頁」功能就是使用堆疊實作。陣列雖可行但操作效率較低，雜湊表無法保持順序，佇列（Queue）是先進先出不符合需求。"
   },
   {
     "id": "Q2",
-    "type": "multiple",
-    "quadrant": "architecture",
-    "question": "Idempotency in payment webhook，需要哪些元素？",
-    "options": [
-      "A. Idempotency-Key with unique constraint",
-      "B. Stateless processing only",
-      "C. State machine with terminal states",
-      "D. Retry without backoff"
-    ],
-    "correctAnswer": ["A", "C"],
-    "maxScore": 3,
-    "explanation": "支付 webhook 的冪等性需要：(A) Idempotency-Key 配合資料庫 unique constraint 防止重複處理；(C) State machine 確保狀態轉換的正確性，terminal states（如 completed/failed）防止狀態被錯誤覆蓋。選項 B 錯誤因為需要持久化狀態，選項 D 錯誤因為需要 exponential backoff 避免雪崩。"
-  },
-  {
-    "id": "Q3",
     "type": "single",
-    "quadrant": "architecture",
-    "question": "Partial success for batch API，最合適的 HTTP 表達？",
+    "quadrant": "algorithm",
+    "question": "在一個已排序的陣列中查找特定元素，最佳的時間複雜度（Time Complexity）是？",
     "options": [
-      "A. 200 OK with summary only",
-      "B. 207 Multi-Status with per-item result",
-      "C. 500 if any item fails",
-      "D. 202 without body"
+      "A. O(n) - 線性搜尋（Linear Search）",
+      "B. O(log n) - 二分搜尋（Binary Search）",
+      "C. O(n²) - 雙重迴圈",
+      "D. O(1) - 直接存取"
     ],
     "correctAnswer": "B",
     "maxScore": 2,
-    "explanation": "HTTP 207 Multi-Status 是 WebDAV 標準，專為批次操作設計。它允許回傳每個項目的獨立狀態碼和結果，客戶端可以精確知道哪些成功、哪些失敗。這比 200 OK 的摘要更詳細，比 500 的全盤失敗更彈性，也比 202 提供更即時的反饋。"
+    "explanation": "在已排序陣列中，二分搜尋（Binary Search）每次將搜尋範圍減半，時間複雜度為 O(log n)，是最佳選擇。線性搜尋為 O(n) 未利用排序特性，O(n²) 過於緩慢，O(1) 僅適用於已知索引位置的情況。二分搜尋是面試常考的經典演算法。"
+  },
+  {
+    "id": "Q3",
+    "type": "truefalse",
+    "quadrant": "algorithm",
+    "question": "雜湊表（Hash Table）的平均查找時間複雜度是 O(1)，但在最壞情況下可能退化為 O(n)。",
+    "correctAnswer": "true",
+    "maxScore": 2,
+    "explanation": "這是正確的。雜湊表在理想情況下（良好的雜湊函數、低碰撞率）查找時間為 O(1)。但在最壞情況下，當所有元素都發生雜湊碰撞（Hash Collision）時，會退化成鏈結串列的線性搜尋 O(n)。因此選擇好的雜湊函數、適當的負載因子（Load Factor）與碰撞處理策略（如鏈結法 Chaining 或開放定址法 Open Addressing）非常重要。"
   },
   {
     "id": "Q4",
-    "type": "truefalse",
-    "quadrant": "architecture",
-    "question": "Saga 更適用跨服務長交易與最終一致，2PC 更偏向強一致短交易。",
-    "correctAnswer": "true",
-    "maxScore": 2
+    "type": "multiple",
+    "quadrant": "algorithm",
+    "question": "在處理大量資料時，以下哪些演算法的時間複雜度是可接受的高效解法？",
+    "options": [
+      "A. O(n log n) - 快速排序（Quick Sort）、合併排序（Merge Sort）",
+      "B. O(n²) - 泡沫排序（Bubble Sort）",
+      "C. O(n) - 線性掃描、計數排序（Counting Sort）",
+      "D. O(2^n) - 遞迴解決所有子集問題"
+    ],
+    "correctAnswer": ["A", "C"],
+    "maxScore": 3,
+    "explanation": "高效演算法包括：(A) O(n log n) 是排序演算法的最佳平均複雜度；(C) O(n) 的線性演算法是理想解法。選項 B 的 O(n²) 在大量資料時效能低落；選項 D 的 O(2^n) 指數時間在資料稍大時就無法執行。在實務中，常見的高效複雜度從優到劣為：O(1) > O(log n) > O(n) > O(n log n) > O(n²)。"
   },
   {
     "id": "Q5",
     "type": "single",
-    "quadrant": "performance",
-    "question": "Lower p95 latency",
+    "quadrant": "fullstack",
+    "question": "前端需要向後端 API 發送請求並攜帶 JSON 資料，以下哪個 HTTP Method 最合適？",
     "options": [
-      "A. Switch JVM GC to Serial",
-      "B. Use connection pool, tune timeouts, consider non-blocking I/O",
-      "C. Increase log level to DEBUG",
-      "D. Disable metrics exporting"
+      "A. GET - 用於獲取資料",
+      "B. POST - 用於提交新資料",
+      "C. DELETE - 用於刪除資料",
+      "D. PUT - 用於完整更新資料"
     ],
     "correctAnswer": "B",
-    "maxScore": 2
+    "maxScore": 2,
+    "explanation": "POST 方法適合提交新資料到伺服器，請求主體（Request Body）可以包含 JSON 資料。GET 用於讀取資源且不應有 Body，DELETE 用於刪除，PUT 用於完整更新現有資源。RESTful API 設計原則：GET（讀取）、POST（新增）、PUT（更新）、PATCH（部分更新）、DELETE（刪除）。理解 HTTP 方法的語義對 API 設計至關重要。"
   },
   {
     "id": "Q6",
-    "type": "multiple",
-    "quadrant": "performance",
-    "question": "Cache protection - 為防 cache penetration/avalanche，常見手法：",
-    "options": [
-      "A. Bloom filter for non-existing keys",
-      "B. Randomized TTL (jitter)",
-      "C. Disable cache consistency entirely",
-      "D. Cache-Aside pattern"
-    ],
-    "correctAnswer": ["A", "B", "D"],
-    "maxScore": 3
+    "type": "truefalse",
+    "quadrant": "fullstack",
+    "question": "HTTP 狀態碼 404 表示「伺服器內部錯誤」，500 表示「找不到資源」。",
+    "correctAnswer": "false",
+    "maxScore": 2,
+    "explanation": "這是錯誤的。正確的是：404 表示「Not Found（找不到資源）」，500 表示「Internal Server Error（伺服器內部錯誤）」。常見的 HTTP 狀態碼分類：2xx 成功（200 OK, 201 Created）、3xx 重新導向（301 Moved Permanently, 302 Found）、4xx 客戶端錯誤（400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found）、5xx 伺服器錯誤（500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable）。理解狀態碼有助於 API 設計與除錯。"
   },
   {
     "id": "Q7",
-    "type": "single",
-    "quadrant": "performance",
-    "question": "Distributed Tracing - 跨服務延遲定位關鍵是：",
+    "type": "multiple",
+    "quadrant": "fullstack",
+    "question": "開發一個需要即時更新的網頁應用（如聊天室、股票看板），以下哪些技術方案是合理的？",
     "options": [
-      "A. CPU metrics only",
-      "B. Propagate Trace/Span Context across services",
-      "C. Only check API Gateway latency",
-      "D. Enable DEBUG logs"
+      "A. 使用 WebSocket 建立雙向即時通訊連線",
+      "B. 使用 Server-Sent Events (SSE) 實作伺服器主動推送",
+      "C. 每秒發送一次 HTTP GET 請求輪詢（Polling）資料",
+      "D. 使用 Long Polling 減少請求次數並保持連線"
     ],
-    "correctAnswer": "B",
-    "maxScore": 2
+    "correctAnswer": ["A", "B", "D"],
+    "maxScore": 3,
+    "explanation": "即時更新的合理方案包括：(A) WebSocket 提供全雙工通訊，最適合雙向互動（如聊天）；(B) SSE 適合伺服器單向推送（如通知、股票更新）；(D) Long Polling 是傳統方案，相容性好但效率較低。選項 C 的短輪詢（Short Polling）會產生大量無用請求，浪費頻寬且增加伺服器負擔，僅適用於對即時性要求不高的場景。"
   },
   {
     "id": "Q8",
-    "type": "truefalse",
-    "quadrant": "performance",
-    "question": "SLO-based canary - 金絲雀判斷應基於 error rate/latency/saturation 門檻自動回滾。",
-    "correctAnswer": "true",
-    "maxScore": 2
+    "type": "single",
+    "quadrant": "fullstack",
+    "question": "前端應用需要處理跨域請求（CORS），後端應該如何設定 HTTP 回應標頭（Response Header）？",
+    "options": [
+      "A. 設定 Access-Control-Allow-Origin: * 允許所有網域",
+      "B. 設定 Access-Control-Allow-Origin 為特定的前端網域，並根據需求設定其他 CORS 標頭",
+      "C. 不設定任何 CORS 標頭，完全開放存取",
+      "D. 設定 Content-Type: application/json 即可"
+    ],
+    "correctAnswer": "B",
+    "maxScore": 3,
+    "explanation": "正確做法是設定 Access-Control-Allow-Origin 為特定的前端網域（如 https://example.com），避免使用萬用字元 * 造成安全風險。還需根據需求設定：Access-Control-Allow-Methods（允許的 HTTP 方法）、Access-Control-Allow-Headers（允許的請求標頭）、Access-Control-Allow-Credentials（是否允許攜帶認證資訊）。選項 C 會導致瀏覽器阻擋跨域請求，選項 D 的 Content-Type 與 CORS 無關。"
   },
   {
     "id": "Q9",
-    "type": "multiple",
-    "quadrant": "reliability",
-    "question": "Release safety - 降低回滾風險：",
+    "type": "single",
+    "quadrant": "systemDesign",
+    "question": "設計一個電商網站的購物車功能，需要支援未登入使用者瀏覽與登入後同步。以下哪種設計最合適？",
     "options": [
-      "A. Blue-Green/Canary",
-      "B. Feature Flag",
-      "C. Disable health checks",
-      "D. Automated rollback on SLO breach"
+      "A. 未登入使用者的購物車資料存在前端 LocalStorage，登入後上傳到後端合併",
+      "B. 所有購物車資料都只存在後端資料庫，未登入使用者無法使用購物車",
+      "C. 使用 Session Cookie 追蹤未登入使用者，購物車資料存後端，登入後關聯到帳號",
+      "D. 購物車資料同時存在前端和後端，不進行任何同步"
     ],
-    "correctAnswer": ["A", "B", "D"],
-    "maxScore": 3
+    "correctAnswer": "A",
+    "maxScore": 4,
+    "explanation": "選項 A 是最合適的設計：未登入時使用 LocalStorage 提供良好體驗，登入後上傳並與伺服器端購物車合併（通常採用聯集或詢問使用者選擇）。選項 B 會失去未登入使用者（潛在客戶），影響轉換率。選項 C 的 Session 在跨裝置時會遺失，且伺服器需儲存大量匿名購物車資料。選項 D 會造成資料不一致。實務上也可使用 Guest Token 機制，給予未登入使用者臨時識別碼，登入後轉換為正式帳號。"
   },
   {
     "id": "Q10",
-    "type": "single",
-    "quadrant": "reliability",
-    "question": "Oversell prevention",
+    "type": "multiple",
+    "quadrant": "systemDesign",
+    "question": "設計高流量的 API 系統時，以下哪些是提升系統擴展性（Scalability）的有效策略？",
     "options": [
-      "A. In-process synchronized",
-      "B. Distributed lock with lease/timeout",
-      "C. Rely on eventual consistency only",
-      "D. Retry until success without limit"
+      "A. 使用負載均衡器（Load Balancer）分散流量到多台伺服器",
+      "B. 將所有邏輯都放在單一大型伺服器，垂直擴展（Vertical Scaling）",
+      "C. 實作快取層（Cache Layer）減少資料庫查詢",
+      "D. 使用訊息佇列（Message Queue）處理非同步任務"
     ],
-    "correctAnswer": "B",
-    "maxScore": 2
+    "correctAnswer": ["A", "C", "D"],
+    "maxScore": 4,
+    "explanation": "提升擴展性的有效策略包括：(A) 負載均衡實現水平擴展（Horizontal Scaling），可隨需求增加伺服器；(C) 快取層大幅減少資料庫負載；(D) 訊息佇列解耦系統、處理流量高峰。選項 B 的垂直擴展有硬體上限且成本高昂，無法無限擴展。現代系統設計趨向：無狀態（Stateless）服務、水平擴展、讀寫分離、資料分片（Sharding）、CDN 加速等策略。"
   },
   {
     "id": "Q11",
     "type": "single",
-    "quadrant": "reliability",
-    "question": "Resilience validation",
+    "quadrant": "systemDesign",
+    "question": "設計一個高流量的電商系統，需要在庫存扣減時避免超賣（Overselling）。以下哪種方案最適合？",
     "options": [
-      "A. Only load testing QPS",
-      "B. Chaos Engineering to inject failures and observe"
+      "A. 使用樂觀鎖（Optimistic Lock）配合版本號（Version），失敗時重試",
+      "B. 完全依賴應用層邏輯判斷，不使用資料庫約束",
+      "C. 使用悲觀鎖（Pessimistic Lock），每次扣減前鎖定整張表",
+      "D. 將庫存資訊存在前端 LocalStorage 中判斷"
     ],
-    "correctAnswer": "B",
-    "maxScore": 2
+    "correctAnswer": "A",
+    "maxScore": 4,
+    "explanation": "高流量場景下，樂觀鎖（Optimistic Lock）配合版本號是最佳方案。它允許並發讀取，僅在更新時檢查版本衝突，失敗時重試。選項 B 無法保證資料一致性；選項 C 的悲觀鎖鎖整張表會嚴重影響效能；選項 D 將關鍵業務邏輯放前端極不安全且無法保證一致性。實務中常搭配分散式鎖（Redis）或訊息佇列（Message Queue）進一步優化。"
   },
   {
     "id": "Q12",
     "type": "truefalse",
-    "quadrant": "reliability",
-    "question": "Quality Gate - Merge 前：Unit tests pass、Static analysis no high risk、Key e2e smoke present。",
-    "correctAnswer": "true",
-    "maxScore": 2
+    "quadrant": "systemDesign",
+    "question": "在微服務架構（Microservices Architecture）中，為了保證跨服務的資料一致性，應該優先使用分散式交易（Distributed Transaction，如 2PC）而非 Saga 模式。",
+    "correctAnswer": "false",
+    "maxScore": 5,
+    "explanation": "這個說法是錯誤的。在微服務架構中，Saga 模式通常優於分散式交易（2PC）。原因：(1) 2PC 需要所有參與服務同時可用，會降低系統可用性；(2) 長時間持有鎖會影響效能；(3) 跨網路的分散式交易協調複雜且容易失敗。Saga 模式透過事件驅動（Event-Driven）的補償機制（Compensation）實現最終一致性（Eventual Consistency），更符合微服務的鬆耦合（Loose Coupling）理念。僅在強一致性絕對必要的場景（如金融交易的特定環節）才考慮使用分散式交易。"
   },
   {
     "id": "Q13",
     "type": "single",
-    "quadrant": "data",
-    "question": "Index strategy - 慢查詢常來自 WHERE/ORDER BY 欄，首要：",
+    "quadrant": "performance",
+    "question": "網站載入速度過慢，檢查發現是因為一次載入了 50 張高解析度圖片。以下哪種優化方式最有效？",
     "options": [
-      "A. Increase DB connections",
-      "B. Create proper composite index matching filter/sort",
-      "C. Bigger machine first",
-      "D. Enable slow query log only"
+      "A. 將所有圖片壓縮成 1KB 的極小檔案",
+      "B. 實作圖片懶載入（Lazy Loading），只載入畫面可見範圍的圖片",
+      "C. 將圖片改用 CSS background-image 方式嵌入",
+      "D. 將所有圖片合併成一張大圖後分割顯示"
     ],
     "correctAnswer": "B",
-    "maxScore": 2
+    "maxScore": 3,
+    "explanation": "圖片懶載入（Lazy Loading）是最有效的方案，只載入使用者當前可見範圍的圖片，滾動時才載入更多。可使用原生的 loading=\"lazy\" 屬性或 Intersection Observer API 實作。選項 A 過度壓縮會嚴重影響畫質；選項 C 不會改善效能；選項 D 的 CSS Sprites 適合小圖示但不適合大量照片。其他優化還包括：使用 WebP/AVIF 格式、CDN 加速、響應式圖片（srcset）、圖片壓縮等。"
   },
   {
     "id": "Q14",
-    "type": "truefalse",
-    "quadrant": "data",
-    "question": "SELECT * + covering index - SELECT * 配 covering index 通常最佳化通用。",
-    "correctAnswer": "false",
-    "maxScore": 2
+    "type": "single",
+    "quadrant": "performance",
+    "question": "系統出現大量資料庫慢查詢（Slow Query），排查發現是 N+1 查詢問題。以下哪種解決方案最有效？",
+    "options": [
+      "A. 增加資料庫伺服器的 CPU 與記憶體",
+      "B. 使用 JOIN 或預載入（Eager Loading）減少查詢次數",
+      "C. 將所有查詢改為非同步執行",
+      "D. 降低查詢的 timeout 時間"
+    ],
+    "correctAnswer": "B",
+    "maxScore": 4,
+    "explanation": "N+1 查詢問題的根因是執行了 1 次主查詢 + N 次關聯查詢。最有效的解決方案是使用 JOIN 或 ORM 的預載入（Eager Loading）機制，將多次查詢合併為一次或少數幾次查詢。選項 A 是治標不治本；選項 C 非同步執行無法減少查詢次數，反而增加複雜度；選項 D 只會讓查詢更快失敗，無法解決問題。實務中也可搭配快取（Cache）或資料預聚合（Pre-aggregation）進一步優化。"
   },
   {
     "id": "Q15",
-    "type": "single",
-    "quadrant": "data",
-    "question": "Read pattern in NoSQL - User + time-range 主路徑，NoSQL 常：",
+    "type": "multiple",
+    "quadrant": "performance",
+    "question": "為了提升 API 的回應速度並降低資料庫負載，導入快取（Cache）機制。以下哪些是正確的做法？",
     "options": [
-      "A. Fully normalized",
-      "B. Denormalize for access path with composite keys"
+      "A. 使用 Cache-Aside 模式，應用程式負責快取的讀寫",
+      "B. 為快取設定合理的過期時間（TTL），並加入隨機抖動（Jitter）避免快取雪崩（Cache Avalanche）",
+      "C. 將所有資料都快取起來，永不過期以達到最快速度",
+      "D. 使用布隆過濾器（Bloom Filter）防止快取穿透（Cache Penetration）"
     ],
-    "correctAnswer": "B",
-    "maxScore": 2
+    "correctAnswer": ["A", "B", "D"],
+    "maxScore": 3,
+    "explanation": "正確做法包括：(A) Cache-Aside 是常見且靈活的快取模式；(B) 設定 TTL 並加入 Jitter 可避免大量快取同時失效導致的快取雪崩；(D) 布隆過濾器可有效攔截不存在的 key，防止快取穿透攻擊資料庫。選項 C 錯誤，永不過期會導致資料陳舊（Stale Data）問題，且佔用大量記憶體。實務中應根據資料特性設定合理的快取策略。"
   },
   {
     "id": "Q16",
     "type": "truefalse",
-    "quadrant": "data",
-    "question": "Security – JWT revocation - JWT 可用 blacklist/version + short TTL + rotation 來撤銷。",
-    "correctAnswer": "true",
-    "maxScore": 2
+    "quadrant": "performance",
+    "question": "資料庫索引（Index）可以大幅提升查詢速度，因此應該為所有欄位都建立索引以達到最佳效能。",
+    "correctAnswer": "false",
+    "maxScore": 3,
+    "explanation": "這是錯誤的。索引雖能提升查詢速度，但會降低寫入（INSERT/UPDATE/DELETE）效能，因為每次寫入都需要更新索引。且索引會佔用額外的磁碟空間。正確做法是：(1) 為經常出現在 WHERE、JOIN、ORDER BY 條件的欄位建立索引；(2) 為高基數（Cardinality）欄位建立索引（如 user_id 而非 gender）；(3) 使用複合索引（Composite Index）優化多欄位查詢；(4) 定期分析查詢日誌（Slow Query Log）找出需要優化的查詢。索引設計需要在查詢效能與寫入效能間取得平衡。"
   },
   {
     "id": "Q17",
-    "type": "scenario",
-    "quadrant": "mixed",
-    "question": "RCA for p95 spike and timeouts - 描述如何進行根本原因分析（每項 1 分）：",
-    "correctAnswer": "",
-    "maxScore": 5,
-    "distribution": {
-      "architecture": 0.25,
-      "performance": 0.25,
-      "reliability": 0.25,
-      "data": 0.25
-    },
-    "rubric": [
-      "Collect SLI/SLO: error rate, latency, saturation; compare canary vs baseline",
-      "Distributed trace to find critical path (longest span)",
-      "Narrow reproduction conditions; add key metrics/logs",
-      "Apply timeouts/retries/circuit breaker; cache/degrade as needed",
-      "Short-term mitigation (rate limit/scale) + mid-term optimization (query/index/batching)"
-    ]
+    "type": "single",
+    "quadrant": "security",
+    "question": "網站需要儲存使用者密碼，以下哪種做法最安全？",
+    "options": [
+      "A. 直接以明文（Plain Text）儲存在資料庫中",
+      "B. 使用 MD5 雜湊（Hash）後儲存",
+      "C. 使用 bcrypt 或 Argon2 等加鹽雜湊演算法（Salted Hash）儲存",
+      "D. 使用 Base64 編碼（Encoding）後儲存"
+    ],
+    "correctAnswer": "C",
+    "maxScore": 2,
+    "explanation": "密碼必須使用專門設計的加鹽雜湊演算法（Salted Hash）如 bcrypt、Argon2、PBKDF2 儲存。選項 A 明文儲存極度危險；選項 B 的 MD5 已被破解且無法防止彩虹表（Rainbow Table）攻擊；選項 D 的 Base64 只是編碼不是加密，可輕易還原。bcrypt/Argon2 會自動加鹽（Salt）並使用高成本運算，即使資料庫外洩也難以破解密碼。"
   },
   {
     "id": "Q18",
     "type": "multiple",
-    "quadrant": "mixed",
-    "question": "Reliable messaging - 避免丟單與重複消費：",
+    "quadrant": "security",
+    "question": "開發 Web 應用時，以下哪些是防止常見安全漏洞的正確做法？",
     "options": [
-      "A. Outbox pattern (producer store then publish)",
-      "B. Consumer idempotency with business key",
-      "C. Disable retries",
-      "D. At-least-once delivery"
+      "A. 使用參數化查詢（Parameterized Query）或 ORM 防止 SQL Injection",
+      "B. 對使用者輸入進行跳脫（Escape）或使用模板引擎防止 XSS（跨站腳本攻擊）",
+      "C. 所有 API 都設為公開存取以方便測試",
+      "D. 使用 CSRF Token 防止跨站請求偽造（CSRF）攻擊"
     ],
     "correctAnswer": ["A", "B", "D"],
     "maxScore": 3,
-    "distribution": {
-      "architecture": 0,
-      "performance": 0,
-      "reliability": 0.5,
-      "data": 0.5
-    }
+    "explanation": "防止常見漏洞的正確做法：(A) 參數化查詢可防止 SQL Injection，避免惡意 SQL 語句執行；(B) 適當跳脫使用者輸入或使用現代框架的自動防護可防止 XSS 攻擊；(D) CSRF Token 確保請求來自合法來源。選項 C 極度危險，API 應實作適當的身份驗證（Authentication）與授權（Authorization）機制。參考 OWASP Top 10 安全風險清單是開發者的基本功。"
   },
   {
     "id": "Q19",
-    "type": "truefalse",
-    "quadrant": "mixed",
-    "question": "API contract for partial failure semantics - Batch API 應在契約層清楚定義 per-item error codes 與 correlation ids。",
-    "correctAnswer": "true",
-    "maxScore": 2,
-    "distribution": {
-      "architecture": 0.5,
-      "performance": 0,
-      "reliability": 0.5,
-      "data": 0
-    }
+    "type": "single",
+    "quadrant": "security",
+    "question": "設計 RESTful API 的身份驗證（Authentication）機制，以下哪種方案在現代 Web 應用中最為推薦？",
+    "options": [
+      "A. 在每個請求的 URL 參數中傳遞使用者帳號密碼",
+      "B. 使用 Session Cookie 儲存登入狀態",
+      "C. 使用 JWT（JSON Web Token）搭配 HTTPS，前端存在 HttpOnly Cookie 或 Authorization Header",
+      "D. 使用 Basic Authentication（Base64 編碼帳密）搭配 HTTP"
+    ],
+    "correctAnswer": "C",
+    "maxScore": 4,
+    "explanation": "選項 C 是現代推薦做法：JWT 無狀態（Stateless）、易於擴展、支援跨域（CORS）。使用 HttpOnly Cookie 可防止 XSS 攻擊存取 Token，或使用 Authorization: Bearer header 搭配短期 Access Token + 長期 Refresh Token 機制。選項 A 極度不安全，密碼會出現在日誌中；選項 B 的 Session 在分散式系統中需要 Session 共享機制（如 Redis），較複雜；選項 D 的 Basic Auth + HTTP 會以明文傳輸密碼。所有方案都必須使用 HTTPS 加密傳輸。"
   },
   {
     "id": "Q20",
+    "type": "truefalse",
+    "quadrant": "security",
+    "question": "HTTPS 使用 SSL/TLS 加密傳輸資料，可以防止中間人攻擊（Man-in-the-Middle Attack），但無法防止 SQL Injection 或 XSS 攻擊。",
+    "correctAnswer": "true",
+    "maxScore": 3,
+    "explanation": "這是正確的。HTTPS 透過 SSL/TLS 加密客戶端與伺服器間的傳輸通道，可防止竊聽與中間人攻擊，確保資料傳輸的機密性與完整性。但 HTTPS 無法防止應用層的安全漏洞，如 SQL Injection（惡意 SQL 語句）、XSS（注入惡意腳本）、CSRF（偽造請求）等。這些漏洞需要在應用程式層面實作對應的防護措施（如輸入驗證、參數化查詢、Content Security Policy 等）。安全是多層次的防護（Defense in Depth），需要從網路層、傳輸層到應用層全面考量。"
+  },
+  {
+    "id": "Q21",
+    "type": "truefalse",
+    "quadrant": "devops",
+    "question": "藍綠部署（Blue-Green Deployment）是指同時運行兩個完全相同的生產環境，部署新版本時切換流量，出問題可快速回滾。",
+    "correctAnswer": "true",
+    "maxScore": 2,
+    "explanation": "這個說法是正確的。藍綠部署維護兩套完全相同的環境（藍色=當前版本，綠色=新版本），新版本在綠色環境測試通過後，透過負載均衡器（Load Balancer）或 DNS 切換流量。優點是零停機時間（Zero Downtime）、快速回滾，缺點是需要雙倍資源且資料庫同步較複雜。其他常見部署策略還包括：金絲雀部署（Canary Deployment）、滾動更新（Rolling Update）、A/B 測試等。"
+  },
+  {
+    "id": "Q22",
+    "type": "truefalse",
+    "quadrant": "devops",
+    "question": "在 CI/CD 流程中，應該先執行部署（Deploy）到生產環境，再執行自動化測試（Automated Tests），以節省時間。",
+    "correctAnswer": "false",
+    "maxScore": 4,
+    "explanation": "這是錯誤的做法。正確的 CI/CD 流程應該是：程式碼提交 → 自動建置（Build）→ 自動化測試（Unit Tests, Integration Tests）→ 部署到測試/預發布環境 → 驗證通過 → 部署到生產環境。先測試後部署可以在問題進入生產環境前攔截，避免影響使用者。測試失敗時應該阻擋（Block）部署流程。現代實踐還會包含：程式碼檢查（Linting）、安全掃描、效能測試、金絲雀部署（Canary）等階段。"
+  },
+  {
+    "id": "Q23",
     "type": "single",
-    "quadrant": "mixed",
-    "question": "Capacity planning signal - 最能預示飽和與退化的指標：",
+    "quadrant": "devops",
+    "question": "生產環境發生重大服務中斷，進行事故處理（Incident Response）時，以下哪個步驟的優先順序最高？",
     "options": [
-      "A. Log lines count",
-      "B. Queue length / saturation (e.g., CPU run queue, DB connection wait)",
-      "C. Number of features deployed"
+      "A. 立即找出根本原因（Root Cause）並修復程式碼",
+      "B. 先恢復服務（Mitigation），確保使用者可正常使用，再進行根因分析（RCA）",
+      "C. 召集所有工程師開會討論解決方案",
+      "D. 等待自動恢復機制（Auto-recovery）生效"
     ],
     "correctAnswer": "B",
-    "maxScore": 2,
+    "maxScore": 5,
+    "explanation": "事故處理的首要原則是先恢復服務（Mitigation），最小化使用者影響。常見手段包括：回滾（Rollback）、切換流量、啟用降級機制（Degradation）、擴充資源等。根因分析（RCA）應在服務穩定後進行，避免在壓力下做出錯誤判斷。選項 A 在緊急情況下找根因會延誤恢復時間；選項 C 開會會浪費寶貴的恢復時間；選項 D 過度依賴自動化可能錯過人工介入的黃金時間。這體現了 SRE（Site Reliability Engineering）的 'Fail Fast, Recover Faster' 原則。"
+  },
+  {
+    "id": "Q24",
+    "type": "multiple",
+    "quadrant": "devops",
+    "question": "團隊需要選擇新的後端框架（Backend Framework），你負責技術選型（Technology Selection）。以下哪些因素應該納入考量？",
+    "options": [
+      "A. 團隊成員的技術熟悉度與學習曲線",
+      "B. 框架的社群活躍度、文件完整性、長期維護性",
+      "C. 選擇最新、最熱門的框架以展現技術領先",
+      "D. 框架的效能表現、生態系統與現有系統的整合性"
+    ],
+    "correctAnswer": ["A", "B", "D"],
+    "maxScore": 4,
+    "explanation": "技術選型應綜合考量：(A) 團隊熟悉度影響開發效率與維護成本；(B) 活躍的社群與完整文件確保長期可維護性；(D) 效能與整合性影響系統品質。選項 C 錯誤，追求新技術而忽略實際需求是技術選型的大忌，應該 '適合的才是最好的'。實務中還需考量：專案規模、時程壓力、團隊規模、未來擴展需求等。優秀的技術決策需要在技術先進性與實用性間取得平衡，並能清楚向團隊與管理層說明選擇理由。"
+  },
+  {
+    "id": "Q25",
+    "type": "scenario",
+    "quadrant": "algorithm",
+    "question": "給定一個整數陣列，需要找出所有和為目標值的兩個數字的索引。例如：陣列 [2, 7, 11, 15]，目標值 9，應回傳 [0, 1]（因為 2 + 7 = 9）。請簡述你的解題思路與時間複雜度。",
+    "correctAnswer": "",
+    "maxScore": 3,
     "distribution": {
-      "architecture": 0,
-      "performance": 0.7,
-      "reliability": 0.3,
-      "data": 0
-    }
+      "algorithm": 1.0
+    },
+    "rubric": [
+      "【基礎 1 分 - Entry/Junior】理解問題需求，提出使用雙重迴圈遍歷所有組合的暴力解法（Brute Force），時間複雜度 O(n²)",
+      "【進階 2 分 - Junior/Mid】提出使用雜湊表（Hash Map）的優化解法：遍歷陣列，每次檢查 target - 當前數字 是否在雜湊表中，若存在則找到答案，否則將當前數字存入雜湊表。時間複雜度 O(n)，空間複雜度 O(n)"
+    ],
+    "explanation": "這是經典的「兩數之和（Two Sum）」問題。暴力解法雖然直觀但效率低，雜湊表解法是最優解，展現了空間換時間的演算法優化思維。優秀的回答應清楚說明演算法步驟、分析時間與空間複雜度，並考慮邊界情況（如陣列為空、無解、有多組解等）。"
+  },
+  {
+    "id": "Q26",
+    "type": "scenario",
+    "quadrant": "mixed",
+    "question": "前端向後端發送登入請求後，後端驗證成功需要回傳使用者資訊與 Token。請設計 API 的回應格式（Response Format），並說明如何在前端儲存與使用 Token。",
+    "correctAnswer": "",
+    "maxScore": 4,
+    "distribution": {
+      "fullstack": 0.6,
+      "security": 0.4
+    },
+    "rubric": [
+      "【基礎 1 分 - Entry/Junior】設計基本的 JSON 回應格式，包含成功狀態、使用者資訊（id, name, email）與 access_token",
+      "【基礎 1 分 - Junior】說明前端將 Token 存在 LocalStorage 或 SessionStorage，並在後續請求的 Authorization Header 中攜帶",
+      "【進階 1 分 - Mid】考慮安全性，建議使用 HttpOnly Cookie 儲存 Token 防止 XSS 攻擊，或實作 Access Token（短期）+ Refresh Token（長期）機制",
+      "【進階 1 分 - Mid/Senior】設計完整的錯誤處理，包含不同的錯誤碼（如帳號不存在、密碼錯誤、帳號被鎖定）與對應的錯誤訊息"
+    ],
+    "explanation": "優秀的 API 設計應考慮：清晰的資料結構、安全性（避免外洩敏感資訊）、完整的錯誤處理、版本控制、文件撰寫等。Token 的儲存與使用涉及安全性權衡：LocalStorage 方便但易受 XSS 攻擊，HttpOnly Cookie 較安全但需處理 CSRF。現代實踐常使用 JWT + Refresh Token 機制平衡安全性與使用者體驗。"
+  },
+  {
+    "id": "Q27",
+    "type": "scenario",
+    "quadrant": "mixed",
+    "question": "電商網站在促銷活動期間，使用者反應頁面載入緩慢且部分圖片無法顯示。請描述你會如何排查問題並提出優化方案。",
+    "correctAnswer": "",
+    "maxScore": 5,
+    "distribution": {
+      "performance": 0.4,
+      "fullstack": 0.3,
+      "devops": 0.3
+    },
+    "rubric": [
+      "【基礎 1 分 - Entry/Junior】檢查瀏覽器開發者工具的 Network 面板，確認哪些資源載入緩慢或失敗，查看 HTTP 狀態碼與載入時間",
+      "【基礎 1 分 - Junior/Mid】檢查伺服器監控（CPU、記憶體、頻寬使用率）與應用程式日誌，確認是否因流量暴增導致資源不足",
+      "【進階 1 分 - Mid】提出短期緩解方案：啟用 CDN 加速圖片載入、實作圖片懶載入（Lazy Loading）、壓縮圖片檔案、增加伺服器資源或開啟自動擴展（Auto Scaling）",
+      "【進階 1 分 - Mid/Senior】提出長期優化方案：實作快取機制（Browser Cache、CDN Cache、伺服器端快取）、優化資料庫查詢、實作限流（Rate Limiting）機制、使用負載均衡分散流量",
+      "【專家 1 分 - Senior/Staff】建立完整的監控與告警機制，包含效能指標（Response Time、Error Rate）、業務指標（訂單量、轉換率）與自動化壓力測試，確保未來促銷活動能提前發現並預防問題"
+    ],
+    "explanation": "電商促銷是典型的高流量場景，需要全面的效能優化策略。優秀的回答應展現系統性思維：從問題排查、短期止血到長期優化、預防機制，涵蓋前端優化、後端效能、基礎設施擴展等多個層面。這反映了全端工程師需要具備的全局觀與實戰經驗。"
+  },
+  {
+    "id": "Q28",
+    "type": "scenario",
+    "quadrant": "mixed",
+    "question": "資料庫中有一張使用者資料表（users），包含 100 萬筆記錄。查詢「特定城市的活躍使用者」的 SQL 語句執行時間超過 10 秒。請描述你會如何優化這個查詢。",
+    "correctAnswer": "",
+    "maxScore": 5,
+    "distribution": {
+      "performance": 0.5,
+      "systemDesign": 0.5
+    },
+    "rubric": [
+      "【基礎 1 分 - Entry/Junior】使用 EXPLAIN 分析查詢執行計畫，確認是否使用了索引（Index）以及掃描的資料行數",
+      "【基礎 1 分 - Junior/Mid】為經常查詢的欄位（如 city、is_active）建立單一索引或複合索引（Composite Index），如 CREATE INDEX idx_city_active ON users(city, is_active)",
+      "【進階 1 分 - Mid】檢查查詢語句是否有問題：避免 SELECT *（只選擇需要的欄位）、避免在 WHERE 條件中使用函數（會導致索引失效）、確認沒有 N+1 查詢問題",
+      "【進階 1 分 - Mid/Senior】實作快取機制：將常查詢的結果快取在 Redis 中，設定合理的過期時間（TTL），減少資料庫查詢次數",
+      "【專家 1 分 - Senior/Staff】考慮資料庫架構優化：若資料量持續增長，考慮資料分片（Sharding）按城市或使用者 ID 範圍分散資料、實作讀寫分離（Master-Slave Replication）、或使用搜尋引擎（Elasticsearch）處理複雜查詢"
+    ],
+    "explanation": "資料庫效能優化是工程師的必備技能。優秀的回答應展現從分析問題（EXPLAIN）、快速優化（索引）、進階優化（快取）到架構改善（分片、讀寫分離）的完整思路。索引設計需要理解查詢模式、考慮寫入效能權衡、定期維護。大規模資料處理還需要考慮資料庫選型（SQL vs NoSQL）、儲存引擎（InnoDB vs MyISAM）等更深層的技術決策。"
+  },
+  {
+    "id": "Q29",
+    "type": "scenario",
+    "quadrant": "mixed",
+    "question": "團隊計畫將舊系統從單體架構（Monolithic Architecture）重構為微服務架構（Microservices）。作為技術負責人，你需要向團隊與管理層說明這個決策。請描述你的理由、風險與實施策略。",
+    "correctAnswer": "",
+    "maxScore": 6,
+    "distribution": {
+      "systemDesign": 0.4,
+      "devops": 0.3,
+      "collaboration": 0.3
+    },
+    "rubric": [
+      "【基礎 1 分 - Junior/Mid】說明微服務的優勢：獨立部署、技術棧靈活、團隊自主、故障隔離、水平擴展等",
+      "【進階 1 分 - Mid】指出重構的風險與挑戰：增加系統複雜度（分散式系統的網路延遲、資料一致性）、需要投入基礎設施（服務發現、API Gateway、監控系統）、團隊學習曲線",
+      "【進階 2 分 - Mid/Senior】提出實施策略：採用絞殺者模式（Strangler Pattern）逐步遷移，而非大爆炸式（Big Bang）重寫；先從邊界清晰、相對獨立的模組開始（如通知服務、報表服務）；建立完整的測試與監控機制確保遷移過程穩定",
+      "【專家 1 分 - Senior】評估是否真的需要微服務：若團隊小、流量不高、業務邏輯簡單，單體架構可能更適合（避免過度設計）；若確實需要，應先優化現有架構的模組化，確保服務邊界清晰後再拆分",
+      "【專家 1 分 - Staff】考慮組織與文化因素：微服務需要 DevOps 文化、自動化能力、清晰的團隊職責劃分；需要與管理層溝通重構的時間成本與業務價值，平衡技術債與新功能開發的優先順序；建立跨團隊的技術標準與溝通機制"
+    ],
+    "explanation": "架構決策是 Senior/Staff 等級工程師的核心能力。優秀的回答應展現：技術深度（理解架構模式的優缺點）、風險意識（認知複雜度與成本）、實踐經驗（知道如何平滑遷移）、全局觀（考慮組織因素）、溝通能力（向不同受眾說明決策理由）。微服務不是銀彈，需要根據實際情況評估，避免 '為了微服務而微服務' 的技術導向思維。"
+  },
+  {
+    "id": "Q30",
+    "type": "scenario",
+    "quadrant": "mixed",
+    "question": "生產環境的資料庫被檢測到異常查詢行為，懷疑遭受 SQL Injection 攻擊。部分使用者資料可能已外洩，系統仍在運行中。請描述你會如何處理這個資安事故？",
+    "correctAnswer": "",
+    "maxScore": 6,
+    "distribution": {
+      "security": 0.4,
+      "devops": 0.3,
+      "systemDesign": 0.2,
+      "collaboration": 0.1
+    },
+    "rubric": [
+      "【基礎 1 分 - Entry/Junior】立即隔離受影響的服務或啟用唯讀模式，阻止進一步的資料外洩",
+      "【基礎 1 分 - Junior/Mid】檢查 Web Application Firewall (WAF) 或應用程式日誌，找出攻擊來源與受影響的 API 端點",
+      "【進階 2 分 - Mid/Senior】分析受影響的資料範圍（哪些使用者、哪些欄位），通知相關團隊（資安、法務、客服）與管理層，準備依照 GDPR 或當地法規進行資料外洩通報（通常 72 小時內）",
+      "【進階 1 分 - Mid/Senior】檢查程式碼找出 SQL Injection 漏洞，修復為參數化查詢（Parameterized Query）或使用 ORM，進行安全測試（使用 SQLMap 等工具驗證修復），部署修復版本",
+      "【專家 1 分 - Senior/Staff】建立事故後續改善計畫：(1) 技術面：實作自動化安全掃描（SAST/DAST）、強化輸入驗證、部署 WAF 規則、定期進行滲透測試（Penetration Testing）；(2) 流程面：建立資安事件應變流程（Incident Response Plan）、加強 Code Review 檢查清單、定期資安培訓；(3) 監控面：建立異常行為偵測告警、資料庫審計日誌分析；(4) 溝通面：向受影響使用者發送通知、公開說明與改善措施、重建使用者信任"
+    ],
+    "explanation": "資安事故處理是極度嚴肅的議題，涉及技術、法律、使用者信任與公司聲譽多個層面。優秀的回答應展現：危機處理能力（快速止血）、技術修復能力（找出並修補漏洞）、合規意識（依法通報）、系統性思維（建立預防機制）、溝通能力（跨團隊協調、對外說明）。Staff 等級的工程師還需要展現領導力：將事故轉化為學習機會、推動組織級的安全文化建設、平衡安全性與開發速度的權衡。資安不是一次性工作，而是持續的過程。"
   }
-]
+] 

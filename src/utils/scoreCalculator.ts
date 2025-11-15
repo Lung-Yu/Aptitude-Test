@@ -1,8 +1,50 @@
 import type { Question } from '../types/quiz.types';
-import type { ScoreResult, QuadrantScores, QuadrantMaxScores } from '../types/results.types';
+import type { ScoreResult, QuadrantScores, QuadrantMaxScores, Level, DimensionLevels } from '../types/results.types';
 import { getQuadrantKeys } from '../data/categories';
 
 const DONT_KNOW_VALUE = 'DONT_KNOW';
+
+/**
+ * Calculate level based on percentage score
+ * Entry: 0-40%, Junior: 40-55%, Mid: 55-70%, Senior: 70-85%, Staff: 85%+
+ */
+export const calculateLevel = (percentage: number): Level => {
+  if (percentage >= 85) return 'Staff';
+  if (percentage >= 70) return 'Senior';
+  if (percentage >= 55) return 'Mid';
+  if (percentage >= 40) return 'Junior';
+  return 'Entry';
+};
+
+/**
+ * Calculate level for each dimension
+ */
+export const calculateDimensionLevels = (percentages: QuadrantScores): DimensionLevels => {
+  const dimensionLevels: DimensionLevels = {};
+  Object.entries(percentages).forEach(([dimension, percentage]) => {
+    dimensionLevels[dimension] = calculateLevel(percentage);
+  });
+  return dimensionLevels;
+};
+
+/**
+ * Calculate overall level using median approach
+ * This prevents a single strong dimension from masking weaknesses in others
+ */
+export const calculateOverallLevel = (dimensionLevels: DimensionLevels): Level => {
+  const levelOrder: Level[] = ['Entry', 'Junior', 'Mid', 'Senior', 'Staff'];
+  const levelValues = Object.values(dimensionLevels).map(level => levelOrder.indexOf(level));
+  
+  // Sort and find median
+  levelValues.sort((a, b) => a - b);
+  const middleIndex = Math.floor(levelValues.length / 2);
+  
+  const medianValue = levelValues.length % 2 === 0
+    ? Math.floor((levelValues[middleIndex - 1] + levelValues[middleIndex]) / 2)
+    : levelValues[middleIndex];
+  
+  return levelOrder[medianValue];
+};
 
 export const calculateScore = (
   questions: Question[],
@@ -95,6 +137,10 @@ export const calculateScore = (
   const totalMaxScore = Object.values(maxScores).reduce((sum, val) => sum + val, 0);
   const overallPercentage = totalMaxScore > 0 ? (totalScore / totalMaxScore) * 100 : 0;
 
+  // Calculate level assessment
+  const dimensionLevels = calculateDimensionLevels(percentages);
+  const overallLevel = calculateOverallLevel(dimensionLevels);
+
   return {
     scores,
     maxScores,
@@ -103,6 +149,8 @@ export const calculateScore = (
     totalMaxScore: Math.round(totalMaxScore * 100) / 100,
     overallPercentage: Math.round(overallPercentage * 100) / 100,
     dontKnowCounts,
-    totalDontKnow
+    totalDontKnow,
+    dimensionLevels,
+    overallLevel
   };
 };

@@ -33,7 +33,7 @@ export const ScoreSummary: React.FC<ScoreSummaryProps> = ({ result }) => {
 
       {/* Quadrant Scores */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">各象限得分</h3>
+        <h3 className="text-lg font-semibold text-gray-800 mb-3">各維度得分</h3>
         {quadrants.map((quadrant) => {
           const score = result.scores[quadrant.key];
           const maxScore = result.maxScores[quadrant.key];
@@ -79,10 +79,10 @@ export const ScoreSummary: React.FC<ScoreSummaryProps> = ({ result }) => {
       <div className="mt-6 p-4 bg-gray-50 rounded-lg">
         <h3 className="font-semibold text-gray-800 mb-2">整體表現</h3>
         <p className="text-gray-700">
-          {result.overallPercentage >= 80 && '優秀！你展現了出色的後端工程能力，各個領域都有扎實的理解。'}
-          {result.overallPercentage >= 60 && result.overallPercentage < 80 && '良好！你有不錯的基礎知識，但在某些領域還有提升空間。'}
-          {result.overallPercentage >= 40 && result.overallPercentage < 60 && '中等。建議加強各個象限的知識，特別關注得分較低的領域。'}
-          {result.overallPercentage < 40 && '需要改進。建議系統性地學習後端工程各個領域的知識和最佳實踐。'}
+          {result.overallPercentage >= 80 && '優秀！你展現了出色的軟體工程能力，各個維度都有扎實的理解。'}
+          {result.overallPercentage >= 60 && result.overallPercentage < 80 && '良好！你有不錯的基礎知識，但在某些維度還有提升空間。'}
+          {result.overallPercentage >= 40 && result.overallPercentage < 60 && '中等。建議加強各個維度的知識，特別關注得分較低的領域。'}
+          {result.overallPercentage < 40 && '需要改進。建議系統性地學習軟體工程各個維度的知識和最佳實踐。'}
         </p>
       </div>
     </div>

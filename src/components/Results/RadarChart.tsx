@@ -57,7 +57,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({ result }) => {
       </ResponsiveContainer>
 
       <div className="mt-6 text-center text-sm text-gray-600">
-        <p>雷達圖顯示你在四個技術象限的相對表現</p>
+        <p>雷達圖顯示你在六個技術維度的相對表現</p>
         <p className="mt-1">面積越大表示整體能力越強</p>
       </div>
     </div>

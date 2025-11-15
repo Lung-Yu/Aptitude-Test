@@ -2,13 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchAllRecords } from '../../utils/adminDataFetcher';
 import type { ParticipantRecord } from '../../types/admin.types';
+import type { Level } from '../../types/results.types';
 import { MultiRadarChart } from './MultiRadarChart';
+
+// Helper function to get level badge
+const getLevelBadge = (level: Level) => {
+  const badges = {
+    'Entry': { emoji: '🌱', color: 'text-gray-600 bg-gray-100', label: 'Entry' },
+    'Junior': { emoji: '📘', color: 'text-blue-600 bg-blue-100', label: 'Junior' },
+    'Mid': { emoji: '🚀', color: 'text-green-600 bg-green-100', label: 'Mid' },
+    'Senior': { emoji: '⭐', color: 'text-orange-600 bg-orange-100', label: 'Senior' },
+    'Staff': { emoji: '👑', color: 'text-purple-600 bg-purple-100', label: 'Staff' }
+  };
+  return badges[level];
+};
 
 export const AdminDashboard: React.FC = () => {
   const [records, setRecords] = useState<ParticipantRecord[]>([]);
   const [visibleRecords, setVisibleRecords] = useState<Set<string>>(new Set());
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const toggleExpand = (email: string) => {
+    setExpandedRows((prev) => {
+      const next = new Set(prev);
+      if (next.has(email)) {
+        next.delete(email);
+      } else {
+        next.add(email);
+      }
+      return next;
+    });
+  };
 
   useEffect(() => {
     loadData();
@@ -164,38 +190,105 @@ export const AdminDashboard: React.FC = () => {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b-2 border-gray-200">
+                <th className="text-left py-3 px-2 font-semibold text-gray-700 w-8"></th>
                 <th className="text-left py-3 px-2 font-semibold text-gray-700">時間</th>
                 <th className="text-left py-3 px-2 font-semibold text-gray-700">姓名</th>
                 <th className="text-left py-3 px-2 font-semibold text-gray-700">Email</th>
                 <th className="text-left py-3 px-2 font-semibold text-gray-700">公司</th>
                 <th className="text-left py-3 px-2 font-semibold text-gray-700">職稱</th>
+                <th className="text-center py-3 px-2 font-semibold text-gray-700">職級</th>
                 <th className="text-right py-3 px-2 font-semibold text-gray-700">總分</th>
                 <th className="text-right py-3 px-2 font-semibold text-gray-700">百分比</th>
               </tr>
             </thead>
             <tbody>
-              {filteredRecords.map((record) => (
-                <tr key={record.email} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-2 text-gray-600 whitespace-nowrap">
-                    {new Date(record.timestamp).toLocaleString('zh-TW', {
-                      month: '2-digit',
-                      day: '2-digit',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </td>
-                  <td className="py-3 px-2 font-medium text-gray-900">{record.name}</td>
-                  <td className="py-3 px-2 text-gray-600">{record.email}</td>
-                  <td className="py-3 px-2 text-gray-600">{record.organization || '-'}</td>
-                  <td className="py-3 px-2 text-gray-600">{record.role || '-'}</td>
-                  <td className="py-3 px-2 text-right font-medium text-gray-900">
-                    {record.totalScore} / {record.totalMaxScore}
-                  </td>
-                  <td className="py-3 px-2 text-right font-medium text-blue-600">
-                    {record.percentage.toFixed(1)}%
-                  </td>
-                </tr>
-              ))}
+              {filteredRecords.map((record) => {
+                const isExpanded = expandedRows.has(record.email);
+                const badge = record.overallLevel ? getLevelBadge(record.overallLevel) : null;
+                
+                return (
+                  <React.Fragment key={record.email}>
+                    <tr className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="py-3 px-2">
+                        {record.dimensionLevels && (
+                          <button
+                            onClick={() => toggleExpand(record.email)}
+                            className="text-gray-500 hover:text-gray-700 transition-colors"
+                            title="展開查看各維度職級"
+                          >
+                            {isExpanded ? '▼' : '▶'}
+                          </button>
+                        )}
+                      </td>
+                      <td className="py-3 px-2 text-gray-600 whitespace-nowrap">
+                        {new Date(record.timestamp).toLocaleString('zh-TW', {
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </td>
+                      <td className="py-3 px-2 font-medium text-gray-900">{record.name}</td>
+                      <td className="py-3 px-2 text-gray-600">{record.email}</td>
+                      <td className="py-3 px-2 text-gray-600">{record.organization || '-'}</td>
+                      <td className="py-3 px-2 text-gray-600">{record.role || '-'}</td>
+                      <td className="py-3 px-2 text-center">
+                        {badge ? (
+                          <div 
+                            className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${badge.color}`}
+                            title={`${badge.label} - ${record.percentage.toFixed(1)}%`}
+                          >
+                            <span>{badge.emoji}</span>
+                            <span>{badge.label}</span>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-2 text-right font-medium text-gray-900">
+                        {record.totalScore} / {record.totalMaxScore}
+                      </td>
+                      <td className="py-3 px-2 text-right font-medium text-blue-600">
+                        {record.percentage.toFixed(1)}%
+                      </td>
+                    </tr>
+                    
+                    {/* Expanded row showing dimension levels */}
+                    {isExpanded && record.dimensionLevels && record.quadrantPercentages && (
+                      <tr className="bg-gray-50 border-b border-gray-100">
+                        <td colSpan={9} className="py-4 px-6">
+                          <div className="text-sm">
+                            <p className="font-semibold text-gray-700 mb-3">各維度職級評估：</p>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                              {Object.entries(record.dimensionLevels).map(([dimension, level]) => {
+                                const dimBadge = getLevelBadge(level);
+                                const percentage = record.quadrantPercentages?.[dimension] ?? 0;
+                                
+                                return (
+                                  <div key={dimension} className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200">
+                                    <span className="text-gray-700 font-medium text-xs">
+                                      {dimension}
+                                    </span>
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-xs text-gray-500">
+                                        {percentage.toFixed(1)}%
+                                      </span>
+                                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${dimBadge.color}`}>
+                                        <span>{dimBadge.emoji}</span>
+                                        <span>{dimBadge.label}</span>
+                                      </span>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </tbody>
           </table>
         </div>
