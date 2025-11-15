@@ -11,24 +11,35 @@ export const AnswerReview: React.FC = () => {
 
   const getQuestionStatus = (question: Question) => {
     const userAnswer = state.answers[question.id];
+    const DONT_KNOW_VALUE = 'DONT_KNOW';
+    
+    // Check if user selected "Don't Know"
+    const isDontKnow = userAnswer === DONT_KNOW_VALUE || 
+                       (Array.isArray(userAnswer) && userAnswer.includes(DONT_KNOW_VALUE));
     
     if (question.type === 'scenario') {
       const score = state.scenarioScores?.[question.id];
       return {
         isCorrect: score !== undefined && score > 0,
         isAnswered: userAnswer !== undefined && userAnswer !== '',
+        isDontKnow: false,
         score: score
       };
     }
 
     if (!userAnswer || (Array.isArray(userAnswer) && userAnswer.length === 0)) {
-      return { isCorrect: false, isAnswered: false };
+      return { isCorrect: false, isAnswered: false, isDontKnow: false };
+    }
+
+    if (isDontKnow) {
+      return { isCorrect: false, isAnswered: true, isDontKnow: true };
     }
 
     if (question.type === 'single' || question.type === 'truefalse') {
       return { 
         isCorrect: userAnswer === question.correctAnswer,
-        isAnswered: true
+        isAnswered: true,
+        isDontKnow: false
       };
     }
 
@@ -40,25 +51,26 @@ export const AnswerReview: React.FC = () => {
       const isCorrect = correctAnswers.length === userAnswers.length &&
         correctAnswers.every(ans => userAnswers.includes(ans));
       
-      return { isCorrect, isAnswered: true };
+      return { isCorrect, isAnswered: true, isDontKnow: false };
     }
 
-    return { isCorrect: false, isAnswered: false };
+    return { isCorrect: false, isAnswered: false, isDontKnow: false };
   };
 
   const filteredQuestions = questions.filter(q => {
     if (filterType === 'all') return true;
     const status = getQuestionStatus(q);
     if (filterType === 'correct') return status.isCorrect;
-    if (filterType === 'incorrect') return status.isAnswered && !status.isCorrect;
+    if (filterType === 'incorrect') return status.isAnswered && !status.isCorrect; // Includes isDontKnow
     return true;
   });
 
   const correctCount = questions.filter(q => getQuestionStatus(q).isCorrect).length;
   const incorrectCount = questions.filter(q => {
     const status = getQuestionStatus(q);
-    return status.isAnswered && !status.isCorrect;
+    return status.isAnswered && !status.isCorrect; // Includes both wrong and don't know
   }).length;
+  const dontKnowCount = questions.filter(q => getQuestionStatus(q).isDontKnow).length;
 
   const renderAnswer = (question: Question) => {
     const userAnswer = state.answers[question.id];
@@ -84,12 +96,27 @@ export const AnswerReview: React.FC = () => {
 
     return (
       <div className="space-y-3">
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="font-medium text-gray-700 mb-2">你的答案：</div>
-          <div className={`font-medium ${status.isCorrect ? 'text-green-600' : 'text-red-600'}`}>
-            {Array.isArray(userAnswer) ? userAnswer.join(', ') : userAnswer || '未作答'}
+        {status.isDontKnow ? (
+          <div className="bg-gray-100 p-4 rounded-lg border-2 border-gray-300">
+            <div className="font-medium text-gray-700 mb-2">你的答案：</div>
+            <div className="flex items-center gap-2 font-medium text-gray-600">
+              <span className="text-2xl">❔</span>
+              <span>不確定 / 跳過</span>
+            </div>
+            <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <div className="text-sm text-amber-800">
+                💡 你選擇了跳過此題，建議閱讀以下解析來學習正確答案。
+              </div>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="font-medium text-gray-700 mb-2">你的答案：</div>
+            <div className={`font-medium ${status.isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+              {Array.isArray(userAnswer) ? userAnswer.join(', ') : userAnswer || '未作答'}
+            </div>
+          </div>
+        )}
         
         <div className="bg-green-50 p-4 rounded-lg border border-green-200">
           <div className="font-medium text-green-700 mb-2">正確答案：</div>
@@ -115,7 +142,7 @@ export const AnswerReview: React.FC = () => {
       <h2 className="text-2xl font-bold text-gray-900 mb-6">答案解析</h2>
 
       {/* Filter Buttons */}
-      <div className="flex gap-3 mb-6">
+      <div className="flex gap-3 mb-6 flex-wrap">
         <button
           onClick={() => setFilterType('all')}
           className={`px-4 py-2 rounded-lg font-medium transition-all ${
@@ -134,7 +161,7 @@ export const AnswerReview: React.FC = () => {
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           }`}
         >
-          答對 ({correctCount})
+          ✓ 答對 ({correctCount})
         </button>
         <button
           onClick={() => setFilterType('incorrect')}
@@ -144,8 +171,13 @@ export const AnswerReview: React.FC = () => {
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           }`}
         >
-          答錯 ({incorrectCount})
+          ✗ 答錯/跳過 ({incorrectCount})
         </button>
+        {dontKnowCount > 0 && (
+          <div className="px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-600 text-sm font-medium">
+            ❔ 不確定：{dontKnowCount} 題
+          </div>
+        )}
       </div>
 
       {/* Question List */}
@@ -168,15 +200,19 @@ export const AnswerReview: React.FC = () => {
                       ? 'bg-blue-100 ring-2 ring-blue-400 shadow-md'
                       : status.isCorrect
                         ? 'bg-green-50 hover:bg-green-100'
-                        : status.isAnswered
-                          ? 'bg-red-50 hover:bg-red-100'
-                          : 'bg-gray-50 hover:bg-gray-100'
+                        : status.isDontKnow
+                          ? 'bg-gray-100 hover:bg-gray-200'
+                          : status.isAnswered
+                            ? 'bg-red-50 hover:bg-red-100'
+                            : 'bg-gray-50 hover:bg-gray-100'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-semibold">{q.id}</span>
                     {status.isCorrect ? (
                       <span className="text-green-600">✓</span>
+                    ) : status.isDontKnow ? (
+                      <span className="text-gray-500">❔</span>
                     ) : status.isAnswered ? (
                       <span className="text-red-600">✗</span>
                     ) : (

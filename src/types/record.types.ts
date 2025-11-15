@@ -22,6 +22,8 @@ export interface AssessmentRecord {
   overallPercentage: number;
   quadrantScores: QuadrantScores;
   quadrantMaxScores: QuadrantMaxScores;
+  dontKnowCounts: QuadrantScores;
+  totalDontKnow: number;
   answers: Record<string, string | string[]>;
   scenarioScores: Record<string, number>;
   scenarioSummary: ScenarioSummary;

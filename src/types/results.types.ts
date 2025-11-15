@@ -10,6 +10,8 @@ export interface ScoreResult {
   totalScore: number;
   totalMaxScore: number;
   overallPercentage: number;
+  dontKnowCounts: QuadrantScores;
+  totalDontKnow: number;
 }
 
 export interface RadarChartData {

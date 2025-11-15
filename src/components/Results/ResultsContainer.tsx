@@ -69,6 +69,8 @@ export const ResultsContainer: React.FC = () => {
       overallPercentage: result.overallPercentage,
       quadrantScores: result.scores,
       quadrantMaxScores: result.maxScores,
+      dontKnowCounts: result.dontKnowCounts,
+      totalDontKnow: result.totalDontKnow,
       answers: state.answers,
       scenarioScores: state.scenarioScores || {},
       scenarioSummary: {

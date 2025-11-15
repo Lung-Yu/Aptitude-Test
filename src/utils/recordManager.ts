@@ -24,10 +24,12 @@ const buildRow = (record: AssessmentRecord): (string | number)[] => {
     record.totalScore,
     record.totalMaxScore,
     record.overallPercentage,
+    record.totalDontKnow,
     record.scenarioSummary.graded,
     record.scenarioSummary.pending,
     JSON.stringify(record.quadrantScores),
     JSON.stringify(record.quadrantMaxScores),
+    JSON.stringify(record.dontKnowCounts),
     answersSummary,
     JSON.stringify(record.scenarioScores),
     record.profile.notes ?? ''

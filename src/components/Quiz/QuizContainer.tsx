@@ -10,11 +10,17 @@ export const QuizContainer: React.FC = () => {
   const currentQuestion = questions[state.currentStep];
   const currentAnswer = state.answers[currentQuestion.id] || (currentQuestion.type === 'multiple' ? [] : '');
   
-  const answeredCount = Object.keys(state.answers).filter(
-    key => {
-      const answer = state.answers[key];
-      return Array.isArray(answer) ? answer.length > 0 : answer !== '';
+  const isQuestionAnswered = (answer: string | string[] | undefined): boolean => {
+    if (!answer) return false;
+    if (answer === 'DONT_KNOW') return true;
+    if (Array.isArray(answer)) {
+      return answer.length > 0; // Includes DONT_KNOW or any other selection
     }
+    return answer !== '';
+  };
+  
+  const answeredCount = Object.keys(state.answers).filter(
+    key => isQuestionAnswered(state.answers[key])
   ).length;
 
   const isLastQuestion = state.currentStep === questions.length - 1;

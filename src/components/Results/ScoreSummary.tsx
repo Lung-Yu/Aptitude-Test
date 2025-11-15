@@ -21,6 +21,13 @@ export const ScoreSummary: React.FC<ScoreSummaryProps> = ({ result }) => {
           <p className="text-xl text-gray-700 mt-2">
             {result.overallPercentage.toFixed(1)}%
           </p>
+          {result.totalDontKnow > 0 && (
+            <div className="mt-3 pt-3 border-t border-blue-200">
+              <p className="text-sm text-gray-600">
+                ❔ 不確定 / 跳過：<span className="font-semibold text-gray-700">{result.totalDontKnow}</span> 題
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -31,6 +38,7 @@ export const ScoreSummary: React.FC<ScoreSummaryProps> = ({ result }) => {
           const score = result.scores[quadrant.key];
           const maxScore = result.maxScores[quadrant.key];
           const percentage = result.percentages[quadrant.key];
+          const dontKnowCount = result.dontKnowCounts[quadrant.key];
           
           return (
             <div key={quadrant.key} className="border-l-4 pl-4 py-2" style={{ borderColor: quadrant.color }}>
@@ -44,6 +52,11 @@ export const ScoreSummary: React.FC<ScoreSummaryProps> = ({ result }) => {
                     {score.toFixed(2)} / {maxScore.toFixed(2)}
                   </p>
                   <p className="text-sm text-gray-600">{percentage.toFixed(1)}%</p>
+                  {dontKnowCount > 0 && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      （不確定：{Math.round(dontKnowCount)} 題）
+                    </p>
+                  )}
                 </div>
               </div>
               
