@@ -21,8 +21,8 @@ export const AnswerReview: React.FC = () => {
       const score = state.scenarioScores?.[question.id];
       return {
         isCorrect: score !== undefined && score > 0,
-        isAnswered: userAnswer !== undefined && userAnswer !== '',
-        isDontKnow: false,
+        isAnswered: (userAnswer !== undefined && userAnswer !== '') || isDontKnow,
+        isDontKnow: isDontKnow,
         score: score
       };
     }
@@ -78,6 +78,30 @@ export const AnswerReview: React.FC = () => {
 
     if (question.type === 'scenario') {
       const score = state.scenarioScores?.[question.id];
+      
+      if (status.isDontKnow) {
+        return (
+          <div className="space-y-3">
+            <div className="bg-gray-100 p-4 rounded-lg border-2 border-gray-300">
+              <div className="font-medium text-gray-700 mb-2">你的答案：</div>
+              <div className="flex items-center gap-2 font-medium text-gray-600">
+                <span className="text-2xl">❔</span>
+                <span>不確定 / 跳過</span>
+              </div>
+              <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="text-sm text-amber-800">
+                  💡 你選擇了跳過此題，建議閱讀評分準則來了解此題的考點。
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-gray-700">得分：</span>
+              <span className="text-lg font-bold text-gray-400">0 / {question.maxScore}</span>
+            </div>
+          </div>
+        );
+      }
+      
       return (
         <div className="space-y-3">
           <div className="bg-gray-50 p-4 rounded-lg">
