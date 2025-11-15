@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QuizProvider, useQuiz } from './context/QuizContext';
 import { QuizContainer } from './components/Quiz/QuizContainer';
 import { ResultsContainer } from './components/Results/ResultsContainer';
@@ -12,7 +12,7 @@ const QuizFlow: React.FC = () => {
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={
           <QuizProvider>
@@ -22,7 +22,7 @@ function App() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
