@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      target: development
+    container_name: Aptitude-Test-app
+    ports:
+      - "5173:5173"
+    volumes:
+      # Mount source code for hot reload
+      - .:/app
+      # Prevent node_modules override
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_BASE_PATH=${VITE_BASE_PATH:-/}
+      - VITE_SHEETS_API_KEY=${VITE_SHEETS_API_KEY}
+      - VITE_SHEETS_SHEET_ID=${VITE_SHEETS_SHEET_ID}
+      - VITE_SHEETS_RANGE=${VITE_SHEETS_RANGE}
+      - VITE_SHEETS_WEB_APP_URL=${VITE_SHEETS_WEB_APP_URL}
+    command: npm run dev -- --host 0.0.0.0
+    stdin_open: true
+    tty: true
